@@ -1,8 +1,18 @@
 package com.task.manager.demo.dto.task;
 
+import com.task.manager.demo.entity.Type_Enum;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public record TaskRequest(
+        @NotBlank
+        String title,
+        @NotBlank
         String description,
-        Long user_id
+        @NotNull
+        int story_points,
+        @NotNull
+        Type_Enum type
 ) {
 }
 

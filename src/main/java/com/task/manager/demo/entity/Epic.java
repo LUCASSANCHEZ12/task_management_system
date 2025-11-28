@@ -1,22 +1,25 @@
 package com.task.manager.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "task")
+@Table(name = "epic")
+@SQLDelete(sql = "UPDATE epic SET deleted = true, deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("deleted = false")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Task {
+public class Epic {
     @Id
     @GeneratedValue
     @UuidGenerator
@@ -41,23 +44,15 @@ public class Task {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "finished_At")
+    @Column(name = "finished_at")
     private LocalDateTime finishedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "assignee_id")
-    private User user;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "epic_id")
-    private Epic epic;
+    @Column
+    private boolean deleted;
 
-    @Column(name = "task_type")
-    @Enumerated(EnumType.STRING)
-    private Type_Enum type;
-
-    @ManyToOne
-    @JoinColumn(name = "task_parent_id")
-    private Task task_parent = null;
-
+    @Column(columnDefinition = "uuid")
+    private UUID deletedBy;
 }

@@ -12,8 +12,10 @@ import com.task.manager.demo.repository.TaskRepository;
 import com.task.manager.demo.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -30,34 +32,35 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDTO create(TaskRequest request) {
-        User user = userRepository.findById(request.user_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-
         Task task = Task.builder()
+                .title(request.title())
+                .type(request.type())
                 .description(request.description())
-                .user(user)
+                .user(null)
+                .epic(null)
+                .task_parent(null)
                 .completed(false)
-                .createdTime(LocalTime.now())
-                .finishedTime(null)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         return mapper.toDto(repository.save(task));
     }
 
     @Override
-    public TaskDTO findById(Long id) {
+    public TaskDTO findById(UUID id) {
         Task task = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarea no encontrada"));
         return mapper.toDto(task);
     }
 
     @Override
-    public TaskDTO complete(Long id) {
+    public TaskDTO complete(UUID id) {
         Task task = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarea no encontrada"));
 
         task.setCompleted(true);
-        task.setFinishedTime(LocalTime.now());
+        task.setFinishedAt(LocalDateTime.now());
 
         return mapper.toDto(repository.save(task));
     }
@@ -70,7 +73,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskDTO> getAllUserToDo(Long user_id) {
+    public List<TaskDTO> getAllUserToDo(UUID user_id) {
         if (userRepository.findById(user_id).isEmpty()) {
             throw new ResourceNotFoundException("Usuario no encontrado");
         }
@@ -79,7 +82,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         if (repository.findById(id).isEmpty()) {
             throw new ResourceNotFoundException("Tarea no encontrada");
         }
@@ -87,12 +90,19 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDTO update(Long todo_id, TaskUpdateDTO request) {
-        Task task = repository.findById(todo_id)
+public TaskDTO update(UUID task_id, TaskUpdateDTO request) {
+        Task task = repository.findById(task_id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarea no encontrada"));
 
         mapper.toEntity(request, task);
+        task.setUpdatedAt(LocalDateTime.now());
         return mapper.toDto(repository.save(task));
+    }
+
+    @Override
+    public List<TaskDTO> searchByTaskByTitle(String title) {
+        List<Task> tasks = repository.searchByTitle(title);
+        return tasks.stream().map(mapper::toDto).toList();
     }
 }
 

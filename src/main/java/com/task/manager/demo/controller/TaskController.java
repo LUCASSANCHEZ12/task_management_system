@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/task")
@@ -34,21 +35,21 @@ public class TaskController {
     @Operation(summary = "Obtener una tarea por ID")
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<TaskDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<TaskDTO> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @Operation(summary = "Obtener todas las tareas de un usuario")
     @GetMapping("/user/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<TaskDTO>> getAllByUser(@PathVariable Long id) {
+    public ResponseEntity<List<TaskDTO>> getAllByUser(@PathVariable UUID id) {
         return ResponseEntity.ok(service.getAllUserToDo(id));
     }
 
     @PostMapping("/complete/{id}")
     @Operation(summary = "Completar una tarea")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<TaskDTO> complete(@PathVariable Long id) {
+    public ResponseEntity<TaskDTO> complete(@PathVariable UUID id) {
         return ResponseEntity.ok(service.complete(id));
     }
 
@@ -59,10 +60,17 @@ public class TaskController {
         return ResponseEntity.ok(service.getAll());
     }
 
+    @GetMapping("/search/{title}")
+    @Operation(summary = "Obtener todas las tareas")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<List<TaskDTO>> searchByTitle(@PathVariable String title) {
+        return ResponseEntity.ok(service.searchByTaskByTitle(title));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar una tarea")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -70,7 +78,7 @@ public class TaskController {
     @PatchMapping("/{id}")
     @Operation(summary = "Actualizar una tarea")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<TaskDTO> update(@PathVariable Long id, @Valid @RequestBody TaskUpdateDTO request) {
+    public ResponseEntity<TaskDTO> update(@PathVariable UUID id, @Valid @RequestBody TaskUpdateDTO request) {
         return ResponseEntity.ok(service.update(id, request));
     }
 }

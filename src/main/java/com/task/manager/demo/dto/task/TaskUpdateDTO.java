@@ -1,14 +1,16 @@
 package com.task.manager.demo.dto.task;
 
+import com.task.manager.demo.entity.Type_Enum;
 import jakarta.validation.constraints.NotBlank;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public record TaskUpdateDTO(
-        @NotBlank
+        String title,
         String description,
-        boolean completed,
-        LocalTime finishedTime
+        int story_points,
+        Type_Enum type,
+        boolean completed
 ) {
 }
 
