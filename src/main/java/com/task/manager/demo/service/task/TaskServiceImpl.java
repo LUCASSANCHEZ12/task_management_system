@@ -73,12 +73,17 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskDTO> getAllUserToDo(UUID user_id) {
+    public List<TaskDTO> getAllUserTasks(UUID user_id) {
         if (userRepository.findById(user_id).isEmpty()) {
             throw new ResourceNotFoundException("Usuario no encontrado");
         }
         List<Task> tasks = repository.findAllByUser_Id(user_id);
         return tasks.stream().map(mapper::toDto).toList();
+    }
+
+    @Override
+    public List<TaskDTO> getAllTasksInProject(UUID projectId) {
+        return List.of();
     }
 
     @Override

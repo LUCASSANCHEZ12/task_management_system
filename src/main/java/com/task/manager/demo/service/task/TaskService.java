@@ -12,7 +12,8 @@ public interface TaskService {
     TaskDTO findById(UUID id);
     TaskDTO complete(UUID id);
     List<TaskDTO> getAll();
-    List<TaskDTO> getAllUserToDo(UUID user_id);
+    List<TaskDTO> getAllUserTasks(UUID user_id);
+    List<TaskDTO> getAllTasksInProject(UUID projectId);
     void deleteById(UUID id);
     TaskDTO update(UUID task_id, TaskUpdateDTO request);
     List<TaskDTO> searchByTaskByTitle(String title);
