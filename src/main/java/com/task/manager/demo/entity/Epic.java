@@ -10,6 +10,8 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -19,6 +21,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Epic {
     @Id
     @GeneratedValue
@@ -55,4 +58,7 @@ public class Epic {
 
     @Column(columnDefinition = "uuid")
     private UUID deletedBy;
+
+    @OneToMany(mappedBy = "epic", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks = new ArrayList<>();
 }

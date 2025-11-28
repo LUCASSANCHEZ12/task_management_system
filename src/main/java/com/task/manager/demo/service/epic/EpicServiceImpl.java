@@ -1,0 +1,93 @@
+package com.task.manager.demo.service.epic;
+
+import com.task.manager.demo.dto.epic.EpicDTO;
+import com.task.manager.demo.dto.epic.EpicRequest;
+import com.task.manager.demo.dto.epic.EpicUpdateDTO;
+import com.task.manager.demo.dto.task.TaskDTO;
+import com.task.manager.demo.entity.Epic;
+import com.task.manager.demo.exception.ResourceNotFoundException;
+import com.task.manager.demo.mapper.EpicMapper;
+import com.task.manager.demo.mapper.TaskMapper;
+import com.task.manager.demo.repository.EpicRepository;
+import com.task.manager.demo.repository.TaskRepository;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class EpicServiceImpl implements EpicService{
+
+    private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
+    private final EpicRepository repository;
+    private final EpicMapper mapper;
+
+    public EpicServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper, EpicRepository repository, EpicMapper mapper) {
+        this.taskRepository = taskRepository;
+        this.taskMapper = taskMapper;
+        this.repository = repository;
+        this.mapper = mapper;
+    }
+
+
+    @Override
+    public EpicDTO create(EpicRequest request) {
+        Epic epic = Epic.builder()
+                .title(request.title())
+                .description(request.description())
+                .story_points(request.story_points())
+                .completed(false)
+                .deleted(false)
+                .deletedAt(null)
+                .deletedBy(null)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .finishedAt(null)
+                .build();
+        return mapper.toDto(repository.save(epic));
+    }
+
+    @Override
+    public EpicDTO findById(UUID epic_Id) {
+        Epic epic = repository.findById(epic_Id)
+                .orElseThrow(() -> new ResourceNotFoundException("Epica no encontrada"));
+        return mapper.toDto(epic);
+    }
+
+    @Override
+    public EpicDTO complete(UUID epic_Id) {
+        return null;
+    }
+
+    @Override
+    public List<EpicDTO> getAll() {
+        return List.of();
+    }
+
+    @Override
+    public List<TaskDTO> getAllTasksInEpic(UUID epic_Id) {
+        return List.of();
+    }
+
+    @Override
+    public List<EpicDTO> getAllEpicsInProject(UUID project_Id) {
+        return List.of();
+    }
+
+    @Override
+    public void deleteById(UUID epic_id) {
+
+    }
+
+    @Override
+    public EpicDTO update(UUID epic_id, EpicUpdateDTO request) {
+        return null;
+    }
+
+    @Override
+    public List<EpicDTO> searchByTaskByTitle(String title) {
+        return List.of();
+    }
+}
