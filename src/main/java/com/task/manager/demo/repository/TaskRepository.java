@@ -13,6 +13,8 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     // JPQL query
     @Query(value = "SELECT * FROM task t WHERE LOWER(t.title) LIKE LOWER(CONCAT('%', :title, '%'))", nativeQuery = true)
     List<Task> searchByTitle(String title);
+
+    List<Task> findAllByEpic_Id(UUID epic_id);
 }
 
 

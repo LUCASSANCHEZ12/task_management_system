@@ -1,6 +1,7 @@
 package com.task.manager.demo.repository;
 
 import com.task.manager.demo.entity.Epic;
+import com.task.manager.demo.entity.Task;
 import com.task.manager.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

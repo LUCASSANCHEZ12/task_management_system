@@ -17,6 +17,7 @@ public interface TaskService {
     void deleteById(UUID id);
     TaskDTO update(UUID task_id, TaskUpdateDTO request);
     List<TaskDTO> searchByTaskByTitle(String title);
+    TaskDTO assignToEpic(UUID task_id, UUID epic_id);
 }
 
 

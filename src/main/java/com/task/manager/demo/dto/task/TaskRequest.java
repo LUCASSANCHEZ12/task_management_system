@@ -1,6 +1,7 @@
 package com.task.manager.demo.dto.task;
 
 import com.task.manager.demo.entity.Type_Enum;
+import com.task.manager.demo.validation.annotation.ValidTaskType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -11,8 +12,8 @@ public record TaskRequest(
         String description,
         @NotNull
         int story_points,
-        @NotNull
-        Type_Enum type
+        @ValidTaskType
+        String type
 ) {
 }
 

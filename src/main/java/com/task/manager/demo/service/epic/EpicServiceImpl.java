@@ -5,6 +5,7 @@ import com.task.manager.demo.dto.epic.EpicRequest;
 import com.task.manager.demo.dto.epic.EpicUpdateDTO;
 import com.task.manager.demo.dto.task.TaskDTO;
 import com.task.manager.demo.entity.Epic;
+import com.task.manager.demo.entity.Task;
 import com.task.manager.demo.exception.ResourceNotFoundException;
 import com.task.manager.demo.mapper.EpicMapper;
 import com.task.manager.demo.mapper.TaskMapper;
@@ -63,12 +64,18 @@ public class EpicServiceImpl implements EpicService{
 
     @Override
     public List<EpicDTO> getAll() {
-        return List.of();
+        return repository.findAll().stream()
+                .map(mapper::toDto)
+                .toList();
     }
 
     @Override
     public List<TaskDTO> getAllTasksInEpic(UUID epic_Id) {
-        return List.of();
+        if (repository.findById(epic_Id).isEmpty()) {
+            throw new ResourceNotFoundException("Epica no encontrado");
+        }
+        List<Task> tasks = taskRepository.findAllByEpic_Id(epic_Id);
+        return tasks.stream().map(taskMapper::toDto).toList();
     }
 
     @Override

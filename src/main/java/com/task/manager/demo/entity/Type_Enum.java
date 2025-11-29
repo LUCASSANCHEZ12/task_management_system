@@ -8,4 +8,11 @@ public enum Type_Enum {
     Type_Enum(String value) {
         this.value = value;
     }
+
+    public static boolean isValid(String value) {
+        for (Type_Enum tz : values()) {
+            if (tz.value.equals(value.toLowerCase())) return true;
+        }
+        return false;
+    }
 }

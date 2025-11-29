@@ -60,15 +60,14 @@ public class TaskController {
             description = "Acceso denegado"
         )
     })
-    @Parameters({
-        @Parameter(
-            name = "id",
-            description = "Identificador unico de  la tarea que se busca eliminar",
-            required = true,
-            example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        )
-    })
-    public ResponseEntity<TaskDTO> create(@Valid @RequestBody TaskRequest request) {
+    public ResponseEntity<TaskDTO> create(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TaskRequest.class)
+                    )
+            )
+            @Valid @RequestBody TaskRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(service.create(request));
@@ -378,5 +377,52 @@ public class TaskController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(service.update(id, request));
+    }
+
+    @PostMapping("/{id}/epic/{epic_id}")
+    @Operation(summary = "Crear una nueva tarea")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Tarea asignada correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TaskDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Petición inválida"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acceso denegado"
+            )
+    })
+    @Parameters({
+            @Parameter(
+                    name = "id",
+                    description = "Identificador unico de la tarea que se busca asignar",
+                    required = true,
+                    example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            ),
+            @Parameter(
+                    name = "epic_id",
+                    description = "Identificador unico de la epica que se busca aasignar",
+                    required = true,
+                    example = "3fa85f64-5717-4562-b3fc-2c963f44af89"
+            )
+    })
+    public ResponseEntity<TaskDTO> assignToEpic(
+            @PathVariable UUID id,
+            @PathVariable UUID epic_id
+            ) {
+
+        return ResponseEntity.ok(service.assignToEpic(id, epic_id));
     }
 }
