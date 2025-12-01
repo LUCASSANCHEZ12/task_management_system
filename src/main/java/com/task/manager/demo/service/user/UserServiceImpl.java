@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findById(Long id) {
+    public UserDto findById(UUID id) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         return mapper.toDto(user);
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         if (repository.findById(id).isEmpty()) {
             throw new ResourceNotFoundException("Usuario no encontrado");
         }
@@ -45,7 +46,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto update(Long id, UserUpdateDTO request) {
+    public UserDto update(UUID id, UserUpdateDTO request) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario con id: " + id + " no encontrado"));
 
