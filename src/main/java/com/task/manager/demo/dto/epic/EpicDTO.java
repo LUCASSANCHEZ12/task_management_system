@@ -1,12 +1,11 @@
-package com.task.manager.demo.dto.task;
+package com.task.manager.demo.dto.epic;
 
 import com.task.manager.demo.entity.Type_Enum;
-import com.task.manager.demo.validation.annotation.ValidTaskType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record TaskDTO(
+public record EpicDTO(
         UUID id,
         String title,
         String description,
@@ -14,13 +13,9 @@ public record TaskDTO(
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime finishedAt,
+        LocalDateTime deletedAt,
+        UUID deletedBy,
         int story_points,
-        Type_Enum type,
-        UUID epic_id,
-        UUID parent_id,
-        UUID user_id,
         UUID project_id
 ) {
 }
-
-

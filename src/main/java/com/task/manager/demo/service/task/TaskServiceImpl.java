@@ -3,61 +3,74 @@ package com.task.manager.demo.service.task;
 import com.task.manager.demo.dto.task.TaskDTO;
 import com.task.manager.demo.dto.task.TaskRequest;
 import com.task.manager.demo.dto.task.TaskUpdateDTO;
-import com.task.manager.demo.entity.Task;
-import com.task.manager.demo.entity.User;
+import com.task.manager.demo.entity.*;
 import com.task.manager.demo.exception.BadRequestException;
 import com.task.manager.demo.exception.ResourceNotFoundException;
 import com.task.manager.demo.mapper.TaskMapper;
+import com.task.manager.demo.repository.EpicRepository;
+import com.task.manager.demo.repository.ProjectRepository;
 import com.task.manager.demo.repository.TaskRepository;
 import com.task.manager.demo.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository repository;
+    private final EpicRepository epicRepository;
+    private final ProjectRepository projectRepository;
     private final TaskMapper mapper;
     private final UserRepository userRepository;
 
-    public TaskServiceImpl(TaskRepository repository, TaskMapper mapper, UserRepository userRepository) {
+    public TaskServiceImpl(TaskRepository repository, EpicRepository epicRepository, ProjectRepository projectRepository, TaskMapper mapper, UserRepository userRepository) {
         this.repository = repository;
+        this.epicRepository = epicRepository;
+        this.projectRepository = projectRepository;
         this.mapper = mapper;
         this.userRepository = userRepository;
     }
 
     @Override
     public TaskDTO create(TaskRequest request) {
-        User user = userRepository.findById(request.user_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        Project project = projectRepository.findById(request.project_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
 
         Task task = Task.builder()
+                .title(request.title())
+                .type(Type_Enum.valueOf(request.type()))
                 .description(request.description())
-                .user(user)
+                .user(null)
+                .epic(null)
+                .project(project)
+                .task_parent(null)
                 .completed(false)
-                .createdTime(LocalTime.now())
-                .finishedTime(null)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         return mapper.toDto(repository.save(task));
     }
 
     @Override
-    public TaskDTO findById(Long id) {
+    public TaskDTO findById(UUID id) {
         Task task = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarea no encontrada"));
         return mapper.toDto(task);
     }
 
     @Override
-    public TaskDTO complete(Long id) {
+    public TaskDTO complete(UUID id) {
         Task task = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarea no encontrada"));
 
         task.setCompleted(true);
-        task.setFinishedTime(LocalTime.now());
+        task.setFinishedAt(LocalDateTime.now());
 
         return mapper.toDto(repository.save(task));
     }
@@ -70,7 +83,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskDTO> getAllUserToDo(Long user_id) {
+    public List<TaskDTO> getAllUserTasks(UUID user_id) {
         if (userRepository.findById(user_id).isEmpty()) {
             throw new ResourceNotFoundException("Usuario no encontrado");
         }
@@ -79,7 +92,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         if (repository.findById(id).isEmpty()) {
             throw new ResourceNotFoundException("Tarea no encontrada");
         }
@@ -87,12 +100,36 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDTO update(Long todo_id, TaskUpdateDTO request) {
-        Task task = repository.findById(todo_id)
+    public TaskDTO update(UUID task_id, TaskUpdateDTO request) {
+        Task task = repository.findById(task_id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarea no encontrada"));
 
         mapper.toEntity(request, task);
+        task.setUpdatedAt(LocalDateTime.now());
         return mapper.toDto(repository.save(task));
+    }
+
+    @Override
+    public List<TaskDTO> searchByTaskByTitle(String title) {
+        List<Task> tasks = repository.searchByTitle(title);
+        return tasks.stream().map(mapper::toDto).toList();
+    }
+
+    @Override
+    public TaskDTO assignToEpic(UUID task_id, UUID epic_id) {
+        Optional<Task> task = repository.findById(task_id);
+        Optional<Epic> epic = epicRepository.findById(epic_id);
+        if (task.isEmpty()) {
+            throw new ResourceNotFoundException("Tarea no encontrada");
+        }
+        if (epic.isEmpty()) {
+            throw new ResourceNotFoundException("Epica no encontrada");
+        }
+        task.get().setEpic(epic.get());
+
+        repository.save(task.get());
+
+        return mapper.toDto(task.get());
     }
 }
 

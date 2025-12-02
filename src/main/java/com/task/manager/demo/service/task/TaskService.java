@@ -5,15 +5,18 @@ import com.task.manager.demo.dto.task.TaskRequest;
 import com.task.manager.demo.dto.task.TaskUpdateDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface TaskService {
     TaskDTO create(TaskRequest request);
-    TaskDTO findById(Long id);
-    TaskDTO complete(Long id);
+    TaskDTO findById(UUID id);
+    TaskDTO complete(UUID id);
     List<TaskDTO> getAll();
-    List<TaskDTO> getAllUserToDo(Long user_id);
-    void deleteById(Long id);
-    TaskDTO update(Long todo_id, TaskUpdateDTO request);
+    List<TaskDTO> getAllUserTasks(UUID user_id);
+    void deleteById(UUID id);
+    TaskDTO update(UUID task_id, TaskUpdateDTO request);
+    List<TaskDTO> searchByTaskByTitle(String title);
+    TaskDTO assignToEpic(UUID task_id, UUID epic_id);
 }
 
 
