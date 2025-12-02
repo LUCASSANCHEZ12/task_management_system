@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public record RegisterRequest(
         @NotBlank(message = "El nombre es requerido")
         @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
@@ -15,7 +17,9 @@ public record RegisterRequest(
 
         @NotBlank(message = "La contraseña es requerida")
         @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
-        String password
+        String password,
+
+        List<String> roleNames
 ) {
 }
 

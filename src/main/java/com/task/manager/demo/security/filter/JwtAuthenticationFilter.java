@@ -19,7 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,17 +43,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 String username = tokenProvider.getUsernameFromToken(jwt);
                 
-                // Obtener roles del token
-                Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8)))
-                        .build()
-                        .parseClaimsJws(jwt)
-                        .getBody();
-                
-                String rolesString = claims.get("roles", String.class);
-                List<SimpleGrantedAuthority> authorities = rolesString != null 
-                    ? Arrays.stream(rolesString.split(","))
-                        .map(SimpleGrantedAuthority::new)
+                List<String> roles = tokenProvider.getRolesFromToken(jwt);
+                List<SimpleGrantedAuthority> authorities = roles != null
+                    ? roles.stream()
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                         .collect(Collectors.toList())
                     : List.of();
 
