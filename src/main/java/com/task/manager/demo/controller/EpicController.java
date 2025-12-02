@@ -284,7 +284,7 @@ public class EpicController {
                 .body(service.searchEpicByTitle(title));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/user/{requester}")
     @Operation(summary = "Eliminar una epica")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Parameters({
@@ -332,8 +332,8 @@ public class EpicController {
                     description = "La epica no fue encontrada"
             )
     })
-    public ResponseEntity<ResponseMessage> delete(@PathVariable UUID id) {
-        service.deleteById(id);
+    public ResponseEntity<ResponseMessage> delete(@PathVariable UUID id, @PathVariable UUID requester) {
+        service.deleteById(id, requester);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("Epica eliminada correctamente"));
