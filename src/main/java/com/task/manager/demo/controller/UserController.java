@@ -4,6 +4,7 @@ import com.task.manager.demo.dto.user.UserDto;
 import com.task.manager.demo.dto.user.UserUpdateDTO;
 import com.task.manager.demo.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/user")
 @Tag(name = "Usuarios", description = "Endpoints para gestión de usuarios")
+@SecurityRequirement(name = "Authorization")
 public class UserController {
 
     private final UserService service;
@@ -24,21 +26,21 @@ public class UserController {
         this.service = service;
     }
 
-    @Operation(summary = "Obtener un usuario por ID")
+    @Operation(summary = "Obtener un usuario por ID", description = "Requiere rol ADMIN")
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
-    @Operation(summary = "Obtener todos los usuarios")
+    @Operation(summary = "Obtener todos los usuarios", description = "Requiere rol ADMIN")
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDto>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
-    @Operation(summary = "Actualizar un usuario")
+    @Operation(summary = "Actualizar un usuario", description = "Requiere rol ADMIN")
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> update(
@@ -49,7 +51,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar un usuario")
+    @Operation(summary = "Eliminar un usuario", description = "Requiere rol ADMIN")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.deleteById(id);

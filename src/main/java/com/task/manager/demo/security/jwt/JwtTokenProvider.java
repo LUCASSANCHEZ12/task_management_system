@@ -11,12 +11,13 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret:mySecretKeyForJWTTokenGenerationThatShouldBeAtLeast256BitsLong}")
+    @Value("${jwt.secret:mySecretKeyForJWTTokenGenerationThatShouldBeAtLeast512BitsLongForHS512AlgorithmSecurityCompliance123456}")
     private String jwtSecret;
 
     @Value("${jwt.expiration:86400000}") // 24 horas por defecto
@@ -24,9 +25,11 @@ public class JwtTokenProvider {
 
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
-        String roles = authentication.getAuthorities().stream()
+        List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+                .filter(auth -> auth.startsWith("ROLE_"))
+                .map(auth -> auth.replace("ROLE_", ""))
+                .collect(Collectors.toList());
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
@@ -50,6 +53,17 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> getRolesFromToken(String token) {
+        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return (List<String>) claims.get("roles");
     }
 
     public boolean validateToken(String token) {
