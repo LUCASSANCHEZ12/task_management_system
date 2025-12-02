@@ -10,7 +10,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface EpicMapper {
-    //@Mapping(source = "user.id", target = "user_id")
+    @Mapping(source = "project.id", target = "project_id")
     EpicDTO toDto(Epic entity);
 
     void toEntity(EpicUpdateDTO dto, @MappingTarget Epic entity);

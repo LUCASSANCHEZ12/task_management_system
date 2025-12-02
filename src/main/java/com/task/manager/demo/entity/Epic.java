@@ -27,7 +27,7 @@ public class Epic {
     @GeneratedValue
     @UuidGenerator
     @Column(columnDefinition = "uuid")
-    private UUID epic_id;
+    private UUID id;
 
     @Column(nullable = false, length = 256)
     private String epic_title;

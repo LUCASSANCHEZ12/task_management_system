@@ -1,8 +1,6 @@
 package com.task.manager.demo.service.project;
 
 import com.task.manager.demo.dto.epic.EpicDTO;
-import com.task.manager.demo.dto.epic.EpicRequest;
-import com.task.manager.demo.dto.epic.EpicUpdateDTO;
 import com.task.manager.demo.dto.project.ProjectDTO;
 import com.task.manager.demo.dto.project.ProjectRequest;
 import com.task.manager.demo.dto.project.ProjectUpdateDTO;
@@ -68,13 +66,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<TaskDTO> getAllTasksInProject(UUID projectId) {
-        List<Task> tasks = taskRepository.finAllProject_Id(projectId);
+        List<Task> tasks = taskRepository.findAllByProject_Id(projectId);
         return tasks.stream().map(taskMapper::toDto).toList();
     }
 
     @Override
     public List<EpicDTO> getAllEpicsInProject(UUID project_Id){
-        List<Epic> epics = epicRepository.finAllProject_Id(project_Id);
+        List<Epic> epics = epicRepository.findAllByProject_Id(project_Id);
         return epics.stream().map(epicMapper::toDto).toList();
     }
 

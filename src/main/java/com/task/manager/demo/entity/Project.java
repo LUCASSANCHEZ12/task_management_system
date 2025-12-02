@@ -25,7 +25,7 @@ public class Project {
     @GeneratedValue
     @UuidGenerator
     @Column(columnDefinition = "uuid")
-    private UUID project_id;
+    private UUID id;
 
     @Column(nullable = false, length = 256)
     private String project_title;
