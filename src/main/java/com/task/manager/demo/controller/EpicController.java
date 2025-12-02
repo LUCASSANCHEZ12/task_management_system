@@ -281,7 +281,7 @@ public class EpicController {
     public ResponseEntity<List<EpicDTO>> searchByTitle(@RequestParam String title) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(service.searchByTaskByTitle(title));
+                .body(service.searchEpicByTitle(title));
     }
 
     @DeleteMapping("/{id}")

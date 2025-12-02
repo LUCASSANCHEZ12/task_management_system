@@ -14,8 +14,7 @@ public interface EpicService {
     EpicDTO complete(UUID epic_Id);
     List<EpicDTO> getAll();
     List<TaskDTO> getAllTasksInEpic(UUID epic_Id);
-    List<EpicDTO> getAllEpicsInProject(UUID project_Id);
-    void deleteById(UUID epic_id);
+    void deleteById(UUID epic_id, UUID requester);
     EpicDTO update(UUID epic_id, EpicUpdateDTO request);
-    List<EpicDTO> searchByTaskByTitle(String title);
+    List<EpicDTO> searchEpicByTitle(String title);
 }

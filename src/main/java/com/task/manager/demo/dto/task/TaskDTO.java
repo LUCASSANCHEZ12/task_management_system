@@ -18,7 +18,8 @@ public record TaskDTO(
         Type_Enum type,
         UUID epic_id,
         UUID parent_id,
-        UUID user_id
+        UUID user_id,
+        UUID project_id
 ) {
 }
 

@@ -5,6 +5,7 @@ import com.task.manager.demo.dto.epic.EpicRequest;
 import com.task.manager.demo.dto.epic.EpicUpdateDTO;
 import com.task.manager.demo.dto.task.TaskDTO;
 import com.task.manager.demo.entity.Epic;
+import com.task.manager.demo.entity.Project;
 import com.task.manager.demo.entity.Task;
 import com.task.manager.demo.exception.ResourceNotFoundException;
 import com.task.manager.demo.mapper.EpicMapper;
@@ -36,9 +37,9 @@ public class EpicServiceImpl implements EpicService{
     @Override
     public EpicDTO create(EpicRequest request) {
         Epic epic = Epic.builder()
-                .title(request.title())
-                .description(request.description())
-                .story_points(request.story_points())
+                .epic_title(request.title())
+                .epic_description(request.description())
+                .epic_story_points(request.story_points())
                 .completed(false)
                 .deleted(false)
                 .deletedAt(null)
@@ -53,7 +54,7 @@ public class EpicServiceImpl implements EpicService{
     @Override
     public EpicDTO findById(UUID epic_Id) {
         Epic epic = repository.findById(epic_Id)
-                .orElseThrow(() -> new ResourceNotFoundException("Epica no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Epic not found"));
         return mapper.toDto(epic);
     }
 
@@ -72,29 +73,33 @@ public class EpicServiceImpl implements EpicService{
     @Override
     public List<TaskDTO> getAllTasksInEpic(UUID epic_Id) {
         if (repository.findById(epic_Id).isEmpty()) {
-            throw new ResourceNotFoundException("Epica no encontrado");
+            throw new ResourceNotFoundException("Epic not found");
         }
         List<Task> tasks = taskRepository.findAllByEpic_Id(epic_Id);
         return tasks.stream().map(taskMapper::toDto).toList();
     }
 
     @Override
-    public List<EpicDTO> getAllEpicsInProject(UUID project_Id) {
-        return List.of();
-    }
-
-    @Override
-    public void deleteById(UUID epic_id) {
-
+    public void deleteById(UUID epic_id, UUID requester) {
+        Epic epic = repository.findById(epic_id)
+                .orElseThrow(() -> new ResourceNotFoundException("Epic not found"));
+        epic.setDeletedBy(requester);
+        repository.save(epic);
+        repository.deleteById(epic_id);
     }
 
     @Override
     public EpicDTO update(UUID epic_id, EpicUpdateDTO request) {
-        return null;
+        Epic epic = repository.findById(epic_id)
+                .orElseThrow(() -> new ResourceNotFoundException("Epic not found"));
+        mapper.toEntity(request, epic);
+        epic.setUpdatedAt(LocalDateTime.now());
+        return mapper.toDto(repository.save(epic));
     }
 
     @Override
-    public List<EpicDTO> searchByTaskByTitle(String title) {
-        return List.of();
+    public List<EpicDTO> searchEpicByTitle(String title) {
+        List<Epic> projects = repository.searchByTitle(title);
+        return projects.stream().map(mapper::toDto).toList();
     }
 }

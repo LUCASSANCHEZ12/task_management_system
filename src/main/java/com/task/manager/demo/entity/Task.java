@@ -5,9 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -59,5 +56,9 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "task_parent_id")
     private Task task_parent = null;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
 
 }

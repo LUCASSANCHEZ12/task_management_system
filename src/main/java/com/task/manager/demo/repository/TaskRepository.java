@@ -1,5 +1,6 @@
 package com.task.manager.demo.repository;
 
+import com.task.manager.demo.entity.Epic;
 import com.task.manager.demo.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     List<Task> searchByTitle(String title);
 
     List<Task> findAllByEpic_Id(UUID epic_id);
+    List<Task> finAllProject_Id(UUID project_id);
 }
 
 

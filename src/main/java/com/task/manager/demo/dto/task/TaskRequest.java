@@ -5,6 +5,8 @@ import com.task.manager.demo.validation.annotation.ValidTaskType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public record TaskRequest(
         @NotBlank
         String title,
@@ -13,7 +15,8 @@ public record TaskRequest(
         @NotNull
         int story_points,
         @ValidTaskType
-        String type
+        String type,
+        UUID project_id
 ) {
 }
 

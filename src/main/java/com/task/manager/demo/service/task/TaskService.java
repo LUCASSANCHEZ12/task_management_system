@@ -13,7 +13,6 @@ public interface TaskService {
     TaskDTO complete(UUID id);
     List<TaskDTO> getAll();
     List<TaskDTO> getAllUserTasks(UUID user_id);
-    List<TaskDTO> getAllTasksInProject(UUID projectId);
     void deleteById(UUID id);
     TaskDTO update(UUID task_id, TaskUpdateDTO request);
     List<TaskDTO> searchByTaskByTitle(String title);

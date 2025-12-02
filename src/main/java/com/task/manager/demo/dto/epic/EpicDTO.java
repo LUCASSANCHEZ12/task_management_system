@@ -15,6 +15,7 @@ public record EpicDTO(
         LocalDateTime finishedAt,
         LocalDateTime deletedAt,
         UUID deletedBy,
-        int story_points
+        int story_points,
+        UUID project_id
 ) {
 }

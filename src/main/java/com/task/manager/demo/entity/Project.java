@@ -10,45 +10,34 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "epic")
-@SQLDelete(sql = "UPDATE epic SET deleted = true, deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Table(name = "project")
+@SQLDelete(sql = "UPDATE project SET deleted = true, deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
 @SQLRestriction("deleted = false")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Epic {
+public class Project {
     @Id
     @GeneratedValue
     @UuidGenerator
     @Column(columnDefinition = "uuid")
-    private UUID epic_id;
+    private UUID project_id;
 
     @Column(nullable = false, length = 256)
-    private String epic_title;
+    private String project_title;
 
     @Column(nullable = false, length = 512)
-    private String epic_description;
-
-    @Column(nullable = true)
-    private int epic_story_points;
-
-    @Column(nullable = false)
-    private boolean completed = false;
+    private String project_description;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @Column(name = "finished_at")
-    private LocalDateTime finishedAt;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
@@ -58,11 +47,4 @@ public class Epic {
 
     @Column(columnDefinition = "uuid")
     private UUID deletedBy;
-
-    @OneToMany(mappedBy = "epic", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Task> tasks = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(name = "project_id", nullable = false)
-    private Project project;
 }

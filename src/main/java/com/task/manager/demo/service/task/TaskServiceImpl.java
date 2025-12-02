@@ -3,14 +3,12 @@ package com.task.manager.demo.service.task;
 import com.task.manager.demo.dto.task.TaskDTO;
 import com.task.manager.demo.dto.task.TaskRequest;
 import com.task.manager.demo.dto.task.TaskUpdateDTO;
-import com.task.manager.demo.entity.Epic;
-import com.task.manager.demo.entity.Task;
-import com.task.manager.demo.entity.Type_Enum;
-import com.task.manager.demo.entity.User;
+import com.task.manager.demo.entity.*;
 import com.task.manager.demo.exception.BadRequestException;
 import com.task.manager.demo.exception.ResourceNotFoundException;
 import com.task.manager.demo.mapper.TaskMapper;
 import com.task.manager.demo.repository.EpicRepository;
+import com.task.manager.demo.repository.ProjectRepository;
 import com.task.manager.demo.repository.TaskRepository;
 import com.task.manager.demo.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -26,24 +24,30 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository repository;
     private final EpicRepository epicRepository;
+    private final ProjectRepository projectRepository;
     private final TaskMapper mapper;
     private final UserRepository userRepository;
 
-    public TaskServiceImpl(TaskRepository repository, EpicRepository epicRepository, TaskMapper mapper, UserRepository userRepository) {
+    public TaskServiceImpl(TaskRepository repository, EpicRepository epicRepository, ProjectRepository projectRepository, TaskMapper mapper, UserRepository userRepository) {
         this.repository = repository;
         this.epicRepository = epicRepository;
+        this.projectRepository = projectRepository;
         this.mapper = mapper;
         this.userRepository = userRepository;
     }
 
     @Override
     public TaskDTO create(TaskRequest request) {
+        Project project = projectRepository.findById(request.project_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
         Task task = Task.builder()
                 .title(request.title())
                 .type(Type_Enum.valueOf(request.type()))
                 .description(request.description())
                 .user(null)
                 .epic(null)
+                .project(project)
                 .task_parent(null)
                 .completed(false)
                 .createdAt(LocalDateTime.now())
@@ -85,11 +89,6 @@ public class TaskServiceImpl implements TaskService {
         }
         List<Task> tasks = repository.findAllByUser_Id(user_id);
         return tasks.stream().map(mapper::toDto).toList();
-    }
-
-    @Override
-    public List<TaskDTO> getAllTasksInProject(UUID projectId) {
-        return List.of();
     }
 
     @Override

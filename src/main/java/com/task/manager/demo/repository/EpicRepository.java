@@ -15,8 +15,7 @@ import java.util.UUID;
 public interface EpicRepository extends JpaRepository<Epic, UUID> {
     // SQL native query
     @Query(value = "SELECT e FROM epic e WHERE LOWER(e.title) LIKE LOWER(CONCAT('%', :title, '%'))", nativeQuery = true)
-    Optional<Epic> findByTitle(String title);
+    List<Epic> searchByTitle(String title);
 
-    // not implemented yet
-    //List<Epic> finByProjectId(UUID project_id);
+    List<Epic> finAllProject_Id(UUID project_id);
 }
