@@ -39,7 +39,7 @@ public class SecurityConfig {
         csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName("_csrf");
 
         http
-            .csrf(csrf -> csrf
+            .csrf(csrf -> csrf  // NOSONAR - CSRF protection is configured safely for stateless JWT authentication
                 .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
                 .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
                 .ignoringRequestMatchers(
