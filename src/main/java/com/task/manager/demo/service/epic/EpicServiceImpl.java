@@ -59,7 +59,7 @@ public class EpicServiceImpl implements EpicService{
         if (request.description().isBlank()) {
             throw new IllegalArgumentException("Description must not be blank");
         }
-        if(repository.existsByTitleAndProjectId(request.title(), request.project_id())) {
+        if(repository.existsByEpicTitleAndProjectId(request.title(), request.project_id())) {
             throw new BadRequestException("Title already exists in this project");
         }
 

@@ -5,7 +5,6 @@ import com.task.manager.demo.dto.project.ProjectDTO;
 import com.task.manager.demo.dto.project.ProjectRequest;
 import com.task.manager.demo.dto.project.ProjectUpdateDTO;
 import com.task.manager.demo.dto.task.TaskDTO;
-import com.task.manager.demo.dto.task.TaskRequest;
 import com.task.manager.demo.entity.*;
 import com.task.manager.demo.exception.BadRequestException;
 import com.task.manager.demo.exception.ResourceNotFoundException;
@@ -71,8 +70,8 @@ public class ProjectServiceTest {
         id = UUID.randomUUID();
         oldProject = new Project();
         oldProject.setId(UUID.randomUUID());
-        oldProject.setProject_title("Old Project");
-        oldProject.setProject_description("Old Project for testing");
+        oldProject.setProjectTitle("Old Project");
+        oldProject.setProjectDescription("Old Project for testing");
         oldProjectRequest = new ProjectRequest( "Old Project",  "Old Project for testing");
     }
 
@@ -116,7 +115,7 @@ public class ProjectServiceTest {
         when(mapper.toDto(oldProject)).thenReturn(expectedDto);
         ProjectDTO result1 = service.create(req1);
         assertNotNull(result1);
-        when(repository.existsByTitle("Old Project")).thenReturn(true);
+        when(repository.existsByProjectTitle("Old Project")).thenReturn(true);
         BadRequestException ex = assertThrows(BadRequestException.class,
                 () -> service.create(req2));
         assertEquals("Title already exists", ex.getMessage());
@@ -256,8 +255,8 @@ public class ProjectServiceTest {
             ProjectUpdateDTO req = invocation.getArgument(0);
             Project target = invocation.getArgument(1);
 
-            target.setProject_title(req.title());
-            target.setProject_description(req.description());
+            target.setProjectTitle(req.title());
+            target.setProjectDescription(req.description());
             return null;
         }).when(mapper).toEntity(request, oldProject);
 
@@ -302,17 +301,17 @@ public class ProjectServiceTest {
     void shouldSearchProjectsByTitle() {
         String title = "Test Project";
 
-        Project proj1 = Project.builder().id(UUID.randomUUID()).project_title("Test Project A").build();
-        Project proj2 = Project.builder().id(UUID.randomUUID()).project_title("Test Project B").build();
+        Project proj1 = Project.builder().id(UUID.randomUUID()).projectTitle("Test Project A").build();
+        Project proj2 = Project.builder().id(UUID.randomUUID()).projectTitle("Test Project B").build();
 
         ProjectDTO dto1 = new ProjectDTO(
                 proj1.getId(),
-                proj1.getProject_title(),
-                proj1.getProject_description(), null,null,null, null);
+                proj1.getProjectTitle(),
+                proj1.getProjectDescription(), null,null,null, null);
         ProjectDTO dto2 = new ProjectDTO(
                 proj2.getId(),
-                proj2.getProject_title(),
-                proj2.getProject_description(), null,null,null, null);
+                proj2.getProjectTitle(),
+                proj2.getProjectDescription(), null,null,null, null);
 
         List<Project> projects = List.of(proj1, proj2);
         List<ProjectDTO> expected = List.of(dto1, dto2);
@@ -377,15 +376,15 @@ public class ProjectServiceTest {
 
         EpicDTO dto1 = new  EpicDTO(
                 epic1.getId(),
-                epic1.getEpic_title(),
-                epic1.getEpic_description(),
+                epic1.getEpicTitle(),
+                epic1.getEpicDescription(),
                 false, null, null, null, null,
                 null, 0, oldProject.getId()
         );
         EpicDTO dto2 = new  EpicDTO(
                 epic2.getId(),
-                epic2.getEpic_title(),
-                epic2.getEpic_description(),
+                epic2.getEpicTitle(),
+                epic2.getEpicDescription(),
                 false, null, null, null, null,
                 null, 0, oldProject.getId()
         );

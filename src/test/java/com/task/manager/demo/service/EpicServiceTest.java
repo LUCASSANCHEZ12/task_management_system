@@ -4,7 +4,6 @@ import com.task.manager.demo.dto.epic.EpicDTO;
 import com.task.manager.demo.dto.epic.EpicRequest;
 import com.task.manager.demo.dto.epic.EpicUpdateDTO;
 import com.task.manager.demo.dto.task.TaskDTO;
-import com.task.manager.demo.dto.task.TaskUpdateDTO;
 import com.task.manager.demo.entity.*;
 import com.task.manager.demo.exception.BadRequestException;
 import com.task.manager.demo.exception.ResourceNotFoundException;
@@ -65,16 +64,16 @@ public class EpicServiceTest {
         id = UUID.randomUUID();
         oldEpic = new Epic();
         oldEpic.setId(id);
-        oldEpic.setEpic_title("Epic test");
-        oldEpic.setEpic_description("Epic test description");
-        oldEpic.setEpic_story_points(0);
+        oldEpic.setEpicTitle("Epic test");
+        oldEpic.setEpicDescription("Epic test description");
+        oldEpic.setEpicStoryPoints(0);
         oldEpic.setProject(new Project());
         oldProject = new Project();
         oldProject.setId(UUID.randomUUID());
         oldEpicRequest = new EpicRequest(
-                oldEpic.getEpic_title(),
-                oldEpic.getEpic_description(),
-                oldEpic.getEpic_story_points(),
+                oldEpic.getEpicTitle(),
+                oldEpic.getEpicDescription(),
+                oldEpic.getEpicStoryPoints(),
                 oldProject.getId()
         );
     }
@@ -160,13 +159,13 @@ public class EpicServiceTest {
         project.setId(projectId);
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(repository.existsByTitleAndProjectId(request.title(), projectId)).thenReturn(true);
+        when(repository.existsByEpicTitleAndProjectId(request.title(), projectId)).thenReturn(true);
 
         BadRequestException ex = assertThrows(BadRequestException.class, () -> service.create(request));
         assertEquals("Title already exists in this project", ex.getMessage());
 
         verify(projectRepository).findById(projectId);
-        verify(repository).existsByTitleAndProjectId(request.title(), projectId);
+        verify(repository).existsByEpicTitleAndProjectId(request.title(), projectId);
     }
 
     @Test
@@ -340,8 +339,8 @@ public class EpicServiceTest {
 
         EpicDTO dto1 = new EpicDTO(
                 epic1.getId(),
-                epic1.getEpic_title(),
-                epic1.getEpic_description(),
+                epic1.getEpicTitle(),
+                epic1.getEpicDescription(),
                 false,
                 null, null, null,
                 null, null, 0,
@@ -349,8 +348,8 @@ public class EpicServiceTest {
         );
         EpicDTO dto2 = new EpicDTO(
                 epic2.getId(),
-                epic2.getEpic_title(),
-                epic2.getEpic_description(),
+                epic2.getEpicTitle(),
+                epic2.getEpicDescription(),
                 false,
                 null, null, null,
                 null, null, 0,
@@ -411,7 +410,7 @@ public class EpicServiceTest {
 
     @Test
     @DisplayName("Fail to delete a epic with false user_id")
-    void shouldNotDeleteProjectByUserId() {
+    void shouldNotDeleteEpicByUserId() {
         UUID random = UUID.randomUUID();
 
         when(repository.findById(oldEpic.getId()))
@@ -423,7 +422,7 @@ public class EpicServiceTest {
 
     @Test
     @DisplayName("Fail to delete a epic with false epic_id")
-    void shouldNotDeleteProjectByEpicId() {
+    void shouldNotDeleteEpicByEpicId() {
         UUID random = UUID.randomUUID();
         ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
                 () -> service.deleteById(random, random));
@@ -440,7 +439,7 @@ public class EpicServiceTest {
 
         Epic updatedEpic = new Epic();
         updatedEpic.setId(id);
-        updatedEpic.setEpic_title("New title");
+        updatedEpic.setEpicTitle("New title");
 
         EpicDTO expectedDto = new EpicDTO(
                 oldEpic.getId(),
@@ -457,9 +456,9 @@ public class EpicServiceTest {
             EpicUpdateDTO req = invocation.getArgument(0);
             Epic target = invocation.getArgument(1);
 
-            target.setEpic_title(req.title());
-            target.setEpic_description(req.description());
-            target.setEpic_story_points(req.story_points());
+            target.setEpicTitle(req.title());
+            target.setEpicDescription(req.description());
+            target.setEpicStoryPoints(req.story_points());
             return null;
         }).when(mapper).toEntity(request, oldEpic);
 

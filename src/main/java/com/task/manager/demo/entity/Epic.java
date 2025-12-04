@@ -2,15 +2,12 @@ package com.task.manager.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -22,13 +19,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Epic extends BaseEntity {
     @Column(nullable = false, length = 256)
-    private String epic_title;
+    private String epicTitle;
 
     @Column(nullable = false, length = 512)
-    private String epic_description;
+    private String epicDescription;
 
     @Column(nullable = true)
-    private int epic_story_points;
+    private int epicStoryPoints;
 
     @Column(nullable = false)
     private boolean completed = false;
@@ -44,17 +41,17 @@ public class Epic extends BaseEntity {
     private Project project;
 
     public static class Builder extends BaseEntity.Builder<Builder> {
-        private String epic_title;
-        private String epic_description;
-        private int epic_story_points;
+        private String epicTitle;
+        private String epicDescription;
+        private int epicStoryPoints;
         private boolean completed;
         private LocalDateTime finishedAt;
         private List<Task> tasks = new ArrayList<>();
         private Project project;
 
-        public Builder epic_title(String epic_title) { this.epic_title = epic_title; return this; }
-        public Builder epic_description(String epic_description) { this.epic_description = epic_description; return this; }
-        public Builder epic_story_points(int epic_story_points) { this.epic_story_points = epic_story_points; return this; }
+        public Builder epic_title(String epic_title) { this.epicTitle = epic_title; return this; }
+        public Builder epic_description(String epic_description) { this.epicDescription = epic_description; return this; }
+        public Builder epic_story_points(int epic_story_points) { this.epicStoryPoints = epic_story_points; return this; }
         public Builder completed(boolean completed) { this.completed = completed; return this; }
         public Builder finishedAt(LocalDateTime finishedAt) { this.finishedAt = finishedAt; return this; }
         public Builder tasks(List<Task> tasks) { this.tasks = tasks; return this; }
@@ -71,9 +68,9 @@ public class Epic extends BaseEntity {
             epic.deletedAt = this.deletedAt;
             epic.deleted = this.deleted;
             epic.deletedBy = this.deletedBy;
-            epic.epic_title = this.epic_title;
-            epic.epic_description = this.epic_description;
-            epic.epic_story_points = this.epic_story_points;
+            epic.epicTitle = this.epicTitle;
+            epic.epicDescription = this.epicDescription;
+            epic.epicStoryPoints = this.epicStoryPoints;
             epic.completed = this.completed;
             epic.finishedAt = this.finishedAt;
             epic.tasks = this.tasks;

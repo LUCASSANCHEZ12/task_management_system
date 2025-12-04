@@ -20,7 +20,6 @@ import com.task.manager.demo.repository.TaskRepository;
 import com.task.manager.demo.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -53,12 +52,12 @@ public class ProjectServiceImpl implements ProjectService {
         checkArgument(!request.title().isBlank(), "Title must not be blank");
         checkArgument(!request.description().isBlank(), "Description must not be blank");
 
-        if (projectRepository.existsByTitle(request.title())) {
+        if (projectRepository.existsByProjectTitle(request.title())) {
             throw new BadRequestException("Title already exists");
         }
         Project project = Project.builder()
-                .project_title(request.title())
-                .project_description(request.description())
+                .projectTitle(request.title())
+                .projectDescription(request.description())
                 .build();
         return projectMapper.toDto(projectRepository.save(project));
     }
