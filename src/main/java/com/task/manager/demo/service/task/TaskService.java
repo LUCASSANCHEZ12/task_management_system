@@ -17,6 +17,7 @@ public interface TaskService {
     TaskDTO update(UUID task_id, TaskUpdateDTO request);
     List<TaskDTO> searchByTaskByTitle(String title);
     TaskDTO assignToEpic(UUID task_id, UUID epic_id);
+    TaskDTO assignToUser(UUID task_id, UUID user_id);
 }
 
 

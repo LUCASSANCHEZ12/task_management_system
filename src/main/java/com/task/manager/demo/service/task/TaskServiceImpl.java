@@ -146,6 +146,23 @@ public class TaskServiceImpl implements TaskService {
 
         return mapper.toDto(task.get());
     }
+
+    @Override
+    public TaskDTO assignToUser(UUID task_id, UUID user_id) {
+        Optional<Task> task = repository.findById(task_id);
+        Optional<User> user = userRepository.findById(user_id);
+        if (task.isEmpty()) {
+            throw new ResourceNotFoundException("Task not found");
+        }
+        if (user.isEmpty()) {
+            throw new ResourceNotFoundException("User not found");
+        }
+        task.get().setUser(user.get());
+
+        repository.save(task.get());
+
+        return mapper.toDto(task.get());
+    }
 }
 
 

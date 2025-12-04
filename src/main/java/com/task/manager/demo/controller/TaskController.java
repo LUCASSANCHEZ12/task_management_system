@@ -427,4 +427,51 @@ public class TaskController {
 
         return ResponseEntity.ok(service.assignToEpic(id, epic_id));
     }
+
+    @PostMapping("/{id}/user/{user_id}")
+    @Operation(summary = "Assign task to user")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Tarea asignada correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TaskDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Petición inválida"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autorizado"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acceso denegado"
+            )
+    })
+    @Parameters({
+            @Parameter(
+                    name = "id",
+                    description = "Identificador unico de la tarea que se busca asignar",
+                    required = true,
+                    example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            ),
+            @Parameter(
+                    name = "epic_id",
+                    description = "Identificador unico del usuario que se busca asignar",
+                    required = true,
+                    example = "3fa85f64-5717-4562-b3fc-2c963f44af89"
+            )
+    })
+    public ResponseEntity<TaskDTO> assignToUser(
+            @PathVariable UUID id,
+            @PathVariable UUID user_id
+    ) {
+
+        return ResponseEntity.ok(service.assignToUser(id, user_id));
+    }
 }
