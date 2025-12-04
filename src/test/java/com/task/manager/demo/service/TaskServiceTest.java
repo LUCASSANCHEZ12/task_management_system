@@ -104,7 +104,7 @@ public class TaskServiceTest {
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> taskService.create(request));
-        assertEquals("Argument 'Title must not be blank' is not valid", exception.getMessage());
+        assertEquals("Title must not be blank", exception.getMessage());
 
     }
 
@@ -137,24 +137,24 @@ public class TaskServiceTest {
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> taskService.create(request));
-        assertEquals("Argument 'Description must not be blank' is not valid", exception.getMessage());
+        assertEquals("Description must not be blank", exception.getMessage());
 
     }
 
-//    @Test
-//    @DisplayName("Fail to create task with negative story points")
-//    void shouldNotCreateTaskTestWithNegativeStoryPoints() {
-//        UUID projectId = UUID.randomUUID();
-//        Project project = new Project();
-//        project.setId(projectId);
-//        TaskRequest request = new TaskRequest( "Old Task",  "Old task test", -10, "TASK",  projectId );
-//
-//        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-//
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-//                () -> taskService.create(request));
-//        assertEquals("Story points must not be negative", exception.getMessage());
-//    }
+    @Test
+    @DisplayName("Fail to create task with negative story points")
+    void shouldNotCreateTaskTestWithNegativeStoryPoints() {
+        UUID projectId = UUID.randomUUID();
+        Project project = new Project();
+        project.setId(projectId);
+        TaskRequest request = new TaskRequest( "Old Task",  "Old task test", -10, "TASK",  projectId );
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> taskService.create(request));
+        assertEquals("Story points must not be negative", exception.getMessage());
+    }
 
     @Test
     @DisplayName("Fail to create task with false projectId")
@@ -177,7 +177,7 @@ public class TaskServiceTest {
         when(projectRepository.findById(oldProject.getId())).thenReturn(Optional.of(oldProject));
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> taskService.create(request));
-        assertEquals("Argument 'Type must not be blank' is not valid", exception.getMessage());
+        assertEquals("Type must not be blank", exception.getMessage());
     }
 
     @Test

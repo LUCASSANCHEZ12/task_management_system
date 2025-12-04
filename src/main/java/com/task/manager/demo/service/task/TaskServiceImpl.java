@@ -41,10 +41,18 @@ public class TaskServiceImpl implements TaskService {
     public TaskDTO create(TaskRequest request) {
         Project project = projectRepository.findById(request.project_id())
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
-        checkArgument(!request.title().isBlank(), "Title must not be blank");
-        checkArgument(!request.description().isBlank(), "Description must not be blank");
-        checkArgument(!request.type().isBlank(), "Type must not be blank");
-//        checkArgument(request.story_points() < 0, "Story points must not be negative");
+        if (request.title().isBlank()) {
+            throw new IllegalArgumentException("Title must not be blank");
+        }
+        if (request.description().isBlank()) {
+            throw new IllegalArgumentException("Description must not be blank");
+        }
+        if (request.type().isBlank()) {
+            throw new IllegalArgumentException("Type must not be blank");
+        }
+        if (request.story_points() < 0 ){
+            throw new IllegalArgumentException("Story points must not be negative");
+        }
 
         if(repository.existsByTitleAndProjectId(request.title(), request.project_id())) {
             throw new BadRequestException("Title already exists in this project");

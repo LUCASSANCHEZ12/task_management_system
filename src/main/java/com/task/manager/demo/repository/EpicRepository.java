@@ -15,4 +15,6 @@ public interface EpicRepository extends JpaRepository<Epic, UUID> {
     List<Epic> searchByTitle(String title);
 
     List<Epic> findAllByProject_Id(UUID project_id);
+
+    boolean existsByTitleAndProjectId(String title,  UUID project_id);
 }

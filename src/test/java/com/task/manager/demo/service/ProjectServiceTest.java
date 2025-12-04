@@ -200,14 +200,10 @@ public class ProjectServiceTest {
                 .thenReturn(Optional.of(requester));
 
         assertDoesNotThrow(() -> service.deleteById(oldProject.getId(), requesterId));
-
         verify(repository).findById(oldProject.getId());
         verify(userRepository).findById(requesterId);
-
         assertEquals(requesterId, oldProject.getDeletedBy());
-
         verify(repository).save(oldProject);
-
         verify(repository).deleteById(oldProject.getId());
     }
 
