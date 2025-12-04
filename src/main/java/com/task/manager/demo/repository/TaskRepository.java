@@ -16,6 +16,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
 
     List<Task> findAllByEpic_Id(UUID epic_id);
     List<Task> findAllByProject_Id(UUID project_id);
+    boolean existsByTitleAndProjectId(String title,  UUID project_id);
 }
 
 

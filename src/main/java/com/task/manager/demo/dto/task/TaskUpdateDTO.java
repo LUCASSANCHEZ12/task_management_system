@@ -14,7 +14,7 @@ public record TaskUpdateDTO(
         String description,
         @Min(value = 0, message = "Los puntos de historia no pueden ser negativos")
         int story_points,
-        Type_Enum type,
+        String type,
         boolean completed
 ) {
 }
