@@ -15,6 +15,7 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
     @Query(value = "SELECT p FROM project p WHERE LOWER(p.project_title) LIKE LOWER(CONCAT('%', :title, '%'))", nativeQuery = true)
     List<Project> searchByTitle(String title);
 
+    boolean existsByTitle(String title);
     // not implemented yet
     //List<Epic> finByProjectId(UUID project_id);
 }
