@@ -32,6 +32,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @SuppressWarnings("java:S4502")
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
@@ -39,6 +40,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/api/task/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/project/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/user/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
