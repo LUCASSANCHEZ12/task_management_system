@@ -1,10 +1,7 @@
 package com.task.manager.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
@@ -12,6 +9,7 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "project")
 @SQLDelete(sql = "UPDATE project SET deleted = true, deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
@@ -19,13 +17,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Project {
-    @Id
-    @GeneratedValue
-    @UuidGenerator
-    @Column(columnDefinition = "uuid")
-    private UUID id;
+public class Project extends BaseEntity{
 
     @Column(nullable = false, length = 256)
     private String project_title;
@@ -33,18 +25,29 @@ public class Project {
     @Column(nullable = false, length = 512)
     private String project_description;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    public static class Builder extends BaseEntity.Builder<Builder> {
+        private String project_title;
+        private String project_description;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+        public Builder project_title(String project_title) { this.project_title = project_title; return this; }
+        public Builder project_description(String project_description) { this.project_description = project_description; return this; }
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+        @Override
+        protected Builder self() { return this; }
 
-    @Column
-    private boolean deleted;
+        public Project build() {
+            Project p = new Project();
+            p.id = this.id;
+            p.createdAt = this.createdAt;
+            p.updatedAt = this.updatedAt;
+            p.deletedAt = this.deletedAt;
+            p.deleted = this.deleted;
+            p.deletedBy = this.deletedBy;
+            p.project_title = this.project_title;
+            p.project_description = this.project_description;
+            return p;
+        }
+    }
 
-    @Column(columnDefinition = "uuid")
-    private UUID deletedBy;
+    public static Builder builder() { return new Builder(); }
 }

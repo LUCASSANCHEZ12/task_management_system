@@ -45,8 +45,6 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = Project.builder()
                 .project_title(request.title())
                 .project_description(request.description())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
         return projectMapper.toDto(projectRepository.save(project));
     }

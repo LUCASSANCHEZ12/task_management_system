@@ -50,8 +50,6 @@ public class TaskServiceImpl implements TaskService {
                 .project(project)
                 .task_parent(null)
                 .completed(false)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
 
         return mapper.toDto(repository.save(task));

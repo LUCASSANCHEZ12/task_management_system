@@ -44,8 +44,6 @@ public class EpicServiceImpl implements EpicService{
                 .deleted(false)
                 .deletedAt(null)
                 .deletedBy(null)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .finishedAt(null)
                 .build();
         return mapper.toDto(repository.save(epic));
