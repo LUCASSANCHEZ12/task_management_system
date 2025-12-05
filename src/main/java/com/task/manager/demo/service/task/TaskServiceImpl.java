@@ -69,6 +69,19 @@ public class TaskServiceImpl implements TaskService {
                 .completed(false)
                 .build();
 
+        Optional<Task> parent;
+        if( request.parent_id() != null){
+            parent = repository.findById(request.parent_id());
+            if(parent.isEmpty()) {
+                throw new BadRequestException("Parent does not exist in the same project");
+            }else {
+                if(!parent.get().getProject().getId().equals(request.project_id())) {
+                    throw new BadRequestException("Parent does not exist in the same project");
+                }
+                task.setTask_parent(parent.get());
+            }
+        }
+
         return mapper.toDto(repository.save(task));
     }
 
@@ -107,10 +120,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteById(UUID id) {
-        if (repository.findById(id).isEmpty()) {
+    public void deleteById(UUID id, UUID user_id) {
+        Optional<Task> task = repository.findById(id);
+        if (task.isEmpty()) {
             throw new ResourceNotFoundException("Task not found");
         }
+        task.get().setDeletedBy(user_id);
+        repository.save(task.get());
         repository.deleteById(id);
     }
 
@@ -139,6 +155,9 @@ public class TaskServiceImpl implements TaskService {
         }
         if (epic.isEmpty()) {
             throw new ResourceNotFoundException("Epic not found");
+        }
+        if (!epic.get().getProject().getId().equals(task.get().getProject().getId())) {
+            throw new BadRequestException("Epic does not exist in the same project");
         }
         task.get().setEpic(epic.get());
 

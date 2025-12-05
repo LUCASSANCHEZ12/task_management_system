@@ -70,7 +70,7 @@ public class TaskControllerTest {
     @DisplayName("Should return unauthorized when accessing task endpoint without authentication")
     void shouldReturnUnauthorizedWithoutAuthentication() throws Exception {
         UUID projectId = UUID.randomUUID();
-        TaskRequest request = new TaskRequest("Test Task", "Test Description", 5, "TASK", projectId);
+        TaskRequest request = new TaskRequest("Test Task", "Test Description", 5, "TASK", null, projectId);
 
         mockMvc.perform(post("/api/task/create")
                         .with(csrf())
@@ -84,7 +84,7 @@ public class TaskControllerTest {
     @WithMockUser(roles = "USER")
     void shouldFailCreatingTaskWithEmptyTitle() throws Exception {
         UUID projectId = UUID.randomUUID();
-        TaskRequest request = new TaskRequest("", "Test Description", 5, "TASK", projectId);
+        TaskRequest request = new TaskRequest("", "Test Description", 5, "TASK",null, projectId);
 
         mockMvc.perform(post("/api/task/create")
                         .with(csrf())
@@ -98,7 +98,7 @@ public class TaskControllerTest {
     @WithMockUser(roles = "USER")
     void shouldFailCreatingTaskWithEmptyDescription() throws Exception {
         UUID projectId = UUID.randomUUID();
-        TaskRequest request = new TaskRequest("Test Task", "", 5, "TASK", projectId);
+        TaskRequest request = new TaskRequest("Test Task", "", 5, "TASK", null, projectId);
 
         mockMvc.perform(post("/api/task/create")
                         .with(csrf())
@@ -218,10 +218,11 @@ public class TaskControllerTest {
     @WithMockUser(roles = "USER")
     void shouldDeleteTaskSuccessfully() throws Exception {
         UUID taskId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
 
-        doNothing().when(service).deleteById(taskId);
+        doNothing().when(service).deleteById(taskId,userId);
 
-        mockMvc.perform(delete("/api/task/{id}", taskId).with(csrf()))
+        mockMvc.perform(delete("/api/task/{id}/user/{userId}", taskId, userId).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Task deleted successfully"));
     }
@@ -300,7 +301,7 @@ public class TaskControllerTest {
     @WithMockUser(roles = "USER")
     void shouldSuccessfullyCreateATask() throws Exception {
         UUID projectId = UUID.randomUUID();
-        TaskRequest request = new TaskRequest("Valid Task", "Valid Description", 5, "TASK", projectId);
+        TaskRequest request = new TaskRequest("Valid Task", "Valid Description", 5, "TASK", null, projectId);
         TaskDTO createdTask = new TaskDTO(
                 UUID.randomUUID(),
                 "Valid Task",
@@ -417,7 +418,7 @@ public class TaskControllerTest {
     @WithMockUser(roles = "USER")
     void shouldFailCreatingTaskWithNegativeStoryPoints() throws Exception {
         UUID projectId = UUID.randomUUID();
-        TaskRequest request = new TaskRequest("Test Task", "Test Description", -1, "TASK", projectId);
+        TaskRequest request = new TaskRequest("Test Task", "Test Description", -1, "TASK", null, projectId);
 
         mockMvc.perform(post("/api/task/create")
                         .with(csrf())

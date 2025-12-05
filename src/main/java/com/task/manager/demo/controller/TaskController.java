@@ -284,7 +284,7 @@ public class TaskController {
                 .body(service.searchByTaskByTitle(title));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/user/{userId}")
     @Operation(summary = "Delete task")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Parameters({
@@ -332,8 +332,8 @@ public class TaskController {
             description = "Task not found"
         )
     })
-    public ResponseEntity<ResponseMessage> delete(@PathVariable UUID id) {
-        service.deleteById(id);
+    public ResponseEntity<ResponseMessage> delete(@PathVariable UUID id, @PathVariable UUID userId) {
+        service.deleteById(id, userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("Task deleted successfully"));
