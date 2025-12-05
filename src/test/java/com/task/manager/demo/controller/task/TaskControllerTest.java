@@ -1,5 +1,9 @@
 package com.task.manager.demo.controller.task;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.task.manager.demo.dto.task.TaskRequest;
+import com.task.manager.demo.dto.task.TaskUpdateDTO;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,26 +27,28 @@ class TaskControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
+    private ObjectMapper objectMapper;
     private MockMvc mockMvc;
 
-    private void setupMockMvc() {
+    @BeforeEach
+    void setUp() {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
                 .build();
+        objectMapper = new ObjectMapper();
     }
 
     @Test
     @DisplayName("Should return unauthorized when accessing task endpoint without authentication")
     void shouldReturnUnauthorizedWithoutAuthentication() throws Exception {
-        setupMockMvc();
         UUID projectId = UUID.randomUUID();
-        String createRequest = "{\"title\": \"Test Task\", \"description\": \"Test Description\", \"story_points\": 5, \"type\": \"TASK\", \"project_id\": \"" + projectId + "\"}";
+        TaskRequest request = new TaskRequest("Test Task", "Test Description", 5, "TASK", projectId);
 
         mockMvc.perform(post("/api/task/create")
                         .with(csrf())
                         .contentType("application/json")
-                        .content(createRequest))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
     }
 
@@ -50,14 +56,13 @@ class TaskControllerTest {
     @DisplayName("Should fail creating task with empty title")
     @WithMockUser(roles = "USER")
     void shouldFailCreatingTaskWithEmptyTitle() throws Exception {
-        setupMockMvc();
         UUID projectId = UUID.randomUUID();
-        String createRequest = "{\"title\": \"\", \"description\": \"Test Description\", \"story_points\": 5, \"type\": \"TASK\", \"project_id\": \"" + projectId + "\"}";
+        TaskRequest request = new TaskRequest("", "Test Description", 5, "TASK", projectId);
 
         mockMvc.perform(post("/api/task/create")
                         .with(csrf())
                         .contentType("application/json")
-                        .content(createRequest))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -65,22 +70,19 @@ class TaskControllerTest {
     @DisplayName("Should fail creating task with empty description")
     @WithMockUser(roles = "USER")
     void shouldFailCreatingTaskWithEmptyDescription() throws Exception {
-        setupMockMvc();
         UUID projectId = UUID.randomUUID();
-        String createRequest = "{\"title\": \"Test Task\", \"description\": \"\", \"story_points\": 5, \"type\": \"TASK\", \"project_id\": \"" + projectId + "\"}";
+        TaskRequest request = new TaskRequest("Test Task", "", 5, "TASK", projectId);
 
         mockMvc.perform(post("/api/task/create")
                         .with(csrf())
                         .contentType("application/json")
-                        .content(createRequest))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Should return unauthorized when getting all tasks without authentication")
     void shouldReturnUnauthorizedWhenGettingAllTasksWithoutAuthentication() throws Exception {
-        setupMockMvc();
-
         mockMvc.perform(get("/api/task/"))
                 .andExpect(status().isForbidden());
     }
@@ -89,8 +91,6 @@ class TaskControllerTest {
     @DisplayName("Should get all tasks with USER role")
     @WithMockUser(roles = "USER")
     void shouldGetAllTasksWithUserRole() throws Exception {
-        setupMockMvc();
-
         mockMvc.perform(get("/api/task/"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
@@ -100,8 +100,6 @@ class TaskControllerTest {
     @DisplayName("Should get all tasks with ADMIN role")
     @WithMockUser(roles = "ADMIN")
     void shouldGetAllTasksWithAdminRole() throws Exception {
-        setupMockMvc();
-
         mockMvc.perform(get("/api/task/"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
@@ -110,8 +108,6 @@ class TaskControllerTest {
     @Test
     @DisplayName("Should return unauthorized when searching tasks without authentication")
     void shouldReturnUnauthorizedWhenSearchingTasksWithoutAuthentication() throws Exception {
-        setupMockMvc();
-
         mockMvc.perform(get("/api/task").param("title", "test"))
                 .andExpect(status().isForbidden());
     }
@@ -120,8 +116,6 @@ class TaskControllerTest {
     @DisplayName("Should search tasks by title with USER role")
     @WithMockUser(roles = "USER")
     void shouldSearchTasksByTitleWithUserRole() throws Exception {
-        setupMockMvc();
-
         mockMvc.perform(get("/api/task").param("title", "test"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
@@ -130,7 +124,6 @@ class TaskControllerTest {
     @Test
     @DisplayName("Should return unauthorized when getting task by ID without authentication")
     void shouldReturnUnauthorizedWhenGettingTaskByIdWithoutAuthentication() throws Exception {
-        setupMockMvc();
         UUID taskId = UUID.randomUUID();
 
         mockMvc.perform(get("/api/task/{id}", taskId))
@@ -141,7 +134,6 @@ class TaskControllerTest {
     @DisplayName("Should get task by ID with USER role")
     @WithMockUser(roles = "USER")
     void shouldGetTaskByIdWithUserRole() throws Exception {
-        setupMockMvc();
         UUID taskId = UUID.randomUUID();
 
         mockMvc.perform(get("/api/task/{id}", taskId))
@@ -151,7 +143,6 @@ class TaskControllerTest {
     @Test
     @DisplayName("Should return unauthorized when deleting task without authentication")
     void shouldReturnUnauthorizedWhenDeletingTaskWithoutAuthentication() throws Exception {
-        setupMockMvc();
         UUID taskId = UUID.randomUUID();
 
         mockMvc.perform(delete("/api/task/{id}", taskId).with(csrf()))
@@ -162,7 +153,6 @@ class TaskControllerTest {
     @DisplayName("Should delete task with USER role returns not found")
     @WithMockUser(roles = "USER")
     void shouldDeleteTaskWithUserRole() throws Exception {
-        setupMockMvc();
         UUID taskId = UUID.randomUUID();
 
         mockMvc.perform(delete("/api/task/{id}", taskId).with(csrf()))
@@ -172,7 +162,6 @@ class TaskControllerTest {
     @Test
     @DisplayName("Should return unauthorized when completing task without authentication")
     void shouldReturnUnauthorizedWhenCompletingTaskWithoutAuthentication() throws Exception {
-        setupMockMvc();
         UUID taskId = UUID.randomUUID();
 
         mockMvc.perform(post("/api/task/complete/{id}", taskId).with(csrf()))
@@ -183,7 +172,6 @@ class TaskControllerTest {
     @DisplayName("Should complete task with USER role returns not found")
     @WithMockUser(roles = "USER")
     void shouldCompleteTaskWithUserRole() throws Exception {
-        setupMockMvc();
         UUID taskId = UUID.randomUUID();
 
         mockMvc.perform(post("/api/task/complete/{id}", taskId).with(csrf()))
@@ -193,14 +181,13 @@ class TaskControllerTest {
     @Test
     @DisplayName("Should return unauthorized when updating task without authentication")
     void shouldReturnUnauthorizedWhenUpdatingTaskWithoutAuthentication() throws Exception {
-        setupMockMvc();
         UUID taskId = UUID.randomUUID();
-        String updateRequest = "{\"title\": \"Updated Task\", \"description\": \"Updated Description\", \"story_points\": 8, \"type\": \"TASK\", \"completed\": false}";
+        TaskUpdateDTO updateRequest = new TaskUpdateDTO("Updated Task", "Updated Description", 8, "TASK", false);
 
         mockMvc.perform(patch("/api/task/{id}", taskId)
                         .with(csrf())
                         .contentType("application/json")
-                        .content(updateRequest))
+                        .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isForbidden());
     }
 
@@ -208,14 +195,13 @@ class TaskControllerTest {
     @DisplayName("Should fail updating task with empty title")
     @WithMockUser(roles = "USER")
     void shouldFailUpdatingTaskWithEmptyTitle() throws Exception {
-        setupMockMvc();
         UUID taskId = UUID.randomUUID();
-        String updateRequest = "{\"title\": \"\", \"description\": \"Updated Description\", \"story_points\": 8, \"type\": \"TASK\", \"completed\": false}";
+        TaskUpdateDTO updateRequest = new TaskUpdateDTO("", "Updated Description", 8, "TASK", false);
 
         mockMvc.perform(patch("/api/task/{id}", taskId)
                         .with(csrf())
                         .contentType("application/json")
-                        .content(updateRequest))
+                        .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -223,14 +209,13 @@ class TaskControllerTest {
     @DisplayName("Should accept valid task creation request")
     @WithMockUser(roles = "USER")
     void shouldAcceptValidTaskCreationRequest() throws Exception {
-        setupMockMvc();
         UUID projectId = UUID.randomUUID();
-        String createRequest = "{\"title\": \"Valid Task\", \"description\": \"Valid Description\", \"story_points\": 5, \"type\": \"TASK\", \"project_id\": \"" + projectId + "\"}";
+        TaskRequest request = new TaskRequest("Valid Task", "Valid Description", 5, "TASK", projectId);
 
         mockMvc.perform(post("/api/task/create")
                         .with(csrf())
                         .contentType("application/json")
-                        .content(createRequest))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
     }
 }
