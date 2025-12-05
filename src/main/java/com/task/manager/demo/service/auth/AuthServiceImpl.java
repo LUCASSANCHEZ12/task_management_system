@@ -47,6 +47,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
+        if (request.email() == null || request.email().isBlank()){
+            throw new IllegalArgumentException("Email is required");
+        }
+        if (request.password() == null || request.password().isBlank()){
+            throw new IllegalArgumentException("Password is required");
+        }
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -62,14 +68,21 @@ public class AuthServiceImpl implements AuthService {
 
             return new LoginResponse(token, expiresIn, roles);
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Credenciales inválidas");
+            throw new BadCredentialsException("Invalid credentials, try again");
         }
     }
 
     @Override
     public LoginResponse register(RegisterRequest request) {
+        if (request.email() == null || request.email().isBlank()){
+            throw new IllegalArgumentException("Email is required");
+        }
+        if (request.name() == null || request.name().isBlank()){
+            throw new IllegalArgumentException("Name is required");
+        }
+
         if (userRepository.findByEmail(request.email()).isPresent()) {
-            throw new BadRequestException("El email ya está registrado");
+            throw new BadRequestException("Email already in use");
         }
 
         User user = User.builder()
@@ -87,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
         Set<Role> userRoles = new HashSet<>();
         for (String roleName : roleNames) {
             Role role = roleRepository.findByName(roleName.toUpperCase())
-                    .orElseThrow(() -> new BadRequestException("Rol no encontrado: " + roleName));
+                    .orElseThrow(() -> new BadRequestException("Role not supported: " + roleName));
             userRoles.add(role);
         }
 

@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto findById(UUID id) {
         User user = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return mapper.toDto(user);
     }
 
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(UUID id) {
         if (repository.findById(id).isEmpty()) {
-            throw new ResourceNotFoundException("Usuario no encontrado");
+            throw new ResourceNotFoundException("User not found");
         }
         repository.deleteById(id);
     }
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto update(UUID id, UserUpdateDTO request) {
         User user = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario con id: " + id + " no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         mapper.toEntity(request, user);
         return mapper.toDto(repository.save(user));

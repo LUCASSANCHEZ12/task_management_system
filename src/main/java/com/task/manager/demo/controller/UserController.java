@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user")
-@Tag(name = "Usuarios", description = "Endpoints para gestión de usuarios")
+@Tag(name = "Users", description = "User management endpoints")
 @SecurityRequirement(name = "Authorization")
 public class UserController {
 
@@ -26,21 +26,21 @@ public class UserController {
         this.service = service;
     }
 
-    @Operation(summary = "Obtener un usuario por ID", description = "Requiere rol ADMIN")
+    @Operation(summary = "Get user by ID", description = "Requires ADMIN role")
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
-    @Operation(summary = "Obtener todos los usuarios", description = "Requiere rol ADMIN")
+    @Operation(summary = "Get all users", description = "Requires ADMIN role")
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDto>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
-    @Operation(summary = "Actualizar un usuario", description = "Requiere rol ADMIN")
+    @Operation(summary = "Update user", description = "Requires ADMIN role")
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> update(
@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar un usuario", description = "Requiere rol ADMIN")
+    @Operation(summary = "Delete user", description = "Requires ADMIN role")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.deleteById(id);

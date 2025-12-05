@@ -4,10 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.UuidGenerator;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -20,17 +16,17 @@ import java.util.UUID;
 public class Project extends BaseEntity{
 
     @Column(nullable = false, length = 256)
-    private String project_title;
+    private String projectTitle;
 
     @Column(nullable = false, length = 512)
-    private String project_description;
+    private String projectDescription;
 
     public static class Builder extends BaseEntity.Builder<Builder> {
-        private String project_title;
-        private String project_description;
+        private String projectTitle;
+        private String projectDescription;
 
-        public Builder project_title(String project_title) { this.project_title = project_title; return this; }
-        public Builder project_description(String project_description) { this.project_description = project_description; return this; }
+        public Builder projectTitle(String project_title) { this.projectTitle = project_title; return this; }
+        public Builder projectDescription(String projectDescription) { this.projectDescription = projectDescription; return this; }
 
         @Override
         protected Builder self() { return this; }
@@ -43,8 +39,8 @@ public class Project extends BaseEntity{
             p.deletedAt = this.deletedAt;
             p.deleted = this.deleted;
             p.deletedBy = this.deletedBy;
-            p.project_title = this.project_title;
-            p.project_description = this.project_description;
+            p.projectTitle = this.projectTitle;
+            p.projectDescription = this.projectDescription;
             return p;
         }
     }

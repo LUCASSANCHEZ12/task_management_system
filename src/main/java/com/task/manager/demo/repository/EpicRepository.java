@@ -11,8 +11,10 @@ import java.util.UUID;
 @Repository
 public interface EpicRepository extends JpaRepository<Epic, UUID> {
     // JPQL
-    @Query("SELECT e FROM Epic e WHERE LOWER(e.epic_title) LIKE LOWER(CONCAT('%', :title, '%'))")
+    @Query("SELECT e FROM Epic e WHERE LOWER(e.epicTitle) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Epic> searchByTitle(String title);
 
     List<Epic> findAllByProject_Id(UUID project_id);
+
+    boolean existsByEpicTitleAndProjectId(String title, UUID project_id);
 }

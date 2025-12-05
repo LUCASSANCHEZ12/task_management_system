@@ -4,11 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record ProjectRequest(
-        @NotBlank(message = "El título no puede estar vacío")
-        @Size(min = 1, max = 256, message = "El título debe tener entre 1 y 256 caracteres")
+        @NotBlank(message = "Title must not be blank")
+        @Size(min = 1, max = 256, message = "Title must be between 1 and 256 characters")
         String title,
-        @NotBlank(message = "La descripción no puede estar vacía")
-        @Size(min = 1, max = 512, message = "La descripción debe tener entre 1 y 512 caracteres")
+        @NotBlank(message = "Description must not be blank")
+        @Size(min = 1, max = 512, message = "Description must be between 1 and 256 characters")
         String description
 ) {
 }
