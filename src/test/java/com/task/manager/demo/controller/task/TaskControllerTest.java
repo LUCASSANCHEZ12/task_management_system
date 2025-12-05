@@ -218,4 +218,126 @@ class TaskControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @DisplayName("Should return forbidden when getting tasks by user without authentication")
+    void shouldReturnForbiddenWhenGettingTasksByUserWithoutAuthentication() throws Exception {
+        UUID userId = UUID.randomUUID();
+
+        mockMvc.perform(get("/api/task/user/{id}", userId))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Should return forbidden when assigning task to epic without authentication")
+    void shouldReturnForbiddenWhenAssigningTaskToEpicWithoutAuthentication() throws Exception {
+        UUID taskId = UUID.randomUUID();
+        UUID epicId = UUID.randomUUID();
+
+        mockMvc.perform(post("/api/task/{id}/epic/{epic_id}", taskId, epicId).with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Should assign task to epic with USER role returns not found")
+    @WithMockUser(roles = "USER")
+    void shouldAssignTaskToEpicWithUserRole() throws Exception {
+        UUID taskId = UUID.randomUUID();
+        UUID epicId = UUID.randomUUID();
+
+        mockMvc.perform(post("/api/task/{id}/epic/{epic_id}", taskId, epicId).with(csrf()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should return forbidden when assigning task to user without authentication")
+    void shouldReturnForbiddenWhenAssigningTaskToUserWithoutAuthentication() throws Exception {
+        UUID taskId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        mockMvc.perform(post("/api/task/{id}/user/{user_id}", taskId, userId).with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Should assign task to user with USER role returns not found")
+    @WithMockUser(roles = "USER")
+    void shouldAssignTaskToUserWithUserRole() throws Exception {
+        UUID taskId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        mockMvc.perform(post("/api/task/{id}/user/{user_id}", taskId, userId).with(csrf()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should return unauthorized when deleting task without csrf token")
+    void shouldReturnForbiddenWhenDeletingTaskWithoutCsrfToken() throws Exception {
+        UUID taskId = UUID.randomUUID();
+
+        mockMvc.perform(delete("/api/task/{id}", taskId))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Should search tasks with empty title")
+    @WithMockUser(roles = "USER")
+    void shouldSearchTasksWithEmptyTitle() throws Exception {
+        mockMvc.perform(get("/api/task").param("title", ""))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @DisplayName("Should fail creating task with negative story points")
+    @WithMockUser(roles = "USER")
+    void shouldFailCreatingTaskWithNegativeStoryPoints() throws Exception {
+        UUID projectId = UUID.randomUUID();
+        TaskRequest request = new TaskRequest("Test Task", "Test Description", -1, "TASK", projectId);
+
+        mockMvc.perform(post("/api/task/create")
+                        .with(csrf())
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should fail creating task without project ID")
+    @WithMockUser(roles = "USER")
+    void shouldFailCreatingTaskWithoutProjectId() throws Exception {
+        mockMvc.perform(post("/api/task/create")
+                        .with(csrf())
+                        .contentType("application/json")
+                        .content("{\"title\": \"Task Title\", \"description\": \"Description\", \"story_points\": 5, \"type\": \"TASK\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should fail updating task with empty description")
+    @WithMockUser(roles = "USER")
+    void shouldFailUpdatingTaskWithEmptyDescription() throws Exception {
+        UUID taskId = UUID.randomUUID();
+        TaskUpdateDTO updateRequest = new TaskUpdateDTO("Updated Task", "", 8, "TASK", false);
+
+        mockMvc.perform(patch("/api/task/{id}", taskId)
+                        .with(csrf())
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should fail updating task with negative story points")
+    @WithMockUser(roles = "USER")
+    void shouldFailUpdatingTaskWithNegativeStoryPoints() throws Exception {
+        UUID taskId = UUID.randomUUID();
+        TaskUpdateDTO updateRequest = new TaskUpdateDTO("Updated Task", "Updated Description", -1, "TASK", false);
+
+        mockMvc.perform(patch("/api/task/{id}", taskId)
+                        .with(csrf())
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isBadRequest());
+    }
 }
