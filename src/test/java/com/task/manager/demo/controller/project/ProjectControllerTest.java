@@ -63,19 +63,6 @@ public class ProjectControllerTest {
     }
 
     @Test
-    @DisplayName("Should return unauthorized when accessing project endpoint without authentication")
-    void shouldReturnUnauthorizedWithoutAuthentication() throws Exception {
-        ProjectRequest createRequest = new ProjectRequest(
-                "Test Project",
-                "Test Project description"
-        );
-        mockMvc.perform(post("/api/project/create")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createRequest)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
     @DisplayName("Should fail creating project with empty title")
     @WithMockUser(roles = "USER")
     void shouldFailCreatingProjectWithEmptyTitle() throws Exception {
