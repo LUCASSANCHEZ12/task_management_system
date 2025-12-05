@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,8 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/epic")
-@Tag(name = "Epicas", description = "Endpoints para gestión de epicas")
+@Tag(name = "Epics", description = "Epic management endpoints")
+@SecurityRequirement(name = "Authorization")
 public class EpicController {
 
     private final EpicService service;
@@ -37,12 +39,12 @@ public class EpicController {
     }
 
     @PostMapping("/create")
-    @Operation(summary = "Crear una nueva epica")
+    @Operation(summary = "Create a new epic")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
-                    description = "Epica creada",
+                    description = "Epic created",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = EpicDTO.class)
@@ -50,15 +52,15 @@ public class EpicController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Petición inválida"
+                    description = "Invalid request"
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado"
+                    description = "Unauthorized"
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado"
+                    description = "Access denied"
             )
     })
     public ResponseEntity<EpicDTO> create(
@@ -74,13 +76,13 @@ public class EpicController {
                 .body(service.create(request));
     }
 
-    @Operation(summary = "Obtener una epica por ID")
+    @Operation(summary = "Get an epic by ID")
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Epica con identificador 3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    description = "Epic with identifier 3fa85f64-5717-4562-b3fc-2c963f66afa6",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = EpicDTO.class)
@@ -88,21 +90,21 @@ public class EpicController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Petición inválida"
+                    description = "Invalid request"
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado"
+                    description = "Unauthorized"
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado"
+                    description = "Access denied"
             )
     })
     @Parameters({
             @Parameter(
                     name = "id",
-                    description = "Identificador unico de la epica que se busca eliminar",
+                    description = "Unique epic identifier to search for",
                     required = true,
                     example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
             )
@@ -113,13 +115,13 @@ public class EpicController {
                 .body(service.findById(id));
     }
 
-    @Operation(summary = "Obtener todas las tareas dentro de una epica")
+    @Operation(summary = "Get all tasks in an epic")
     @GetMapping("/{id}/tasks")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Lista de tareas asociadas a la epica",
+                    description = "List of tasks associated with the epic",
                     content = @Content(
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = TaskDTO.class))
@@ -127,21 +129,21 @@ public class EpicController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Petición inválida"
+                    description = "Invalid request"
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado"
+                    description = "Unauthorized"
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado"
+                    description = "Access denied"
             )
     })
     @Parameters({
             @Parameter(
                     name = "id",
-                    description = "Identificador unico de la epica",
+                    description = "Unique epic identifier",
                     required = true,
                     example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
             )
@@ -153,23 +155,23 @@ public class EpicController {
     }
 
     @PostMapping("/complete/{id}")
-    @Operation(summary = "Completar una epica")
+    @Operation(summary = "Complete an epic")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "epica completada",
+                    description = "Epic completed",
                     content = @Content(
                             mediaType = "application/json",
                             examples = {
                                     @ExampleObject(
-                                            name = "epicaCompletada",
-                                            summary = "Ejemplo de una epica marcada como completada",
+                                            name = "epicCompleted",
+                                            summary = "Example of an epic marked as completed",
                                             value = """
                     {
                         "id": "2f8d2f18-7c74-4d28-9a5a-0654a023b17c",
-                        "title": "Implementacion y diseño de pagina web",
-                        "description": "Diseñar y crear una landing page para la empresa",
+                        "title": "Implementation and design of website",
+                        "description": "Design and create a landing page for the company",
                         "story_points": 5,
                         "completed": true,
                         "createdAt": "2025-01-10T10:00:00",
@@ -186,21 +188,21 @@ public class EpicController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Petición inválida"
+                    description = "Invalid request"
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado"
+                    description = "Unauthorized"
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado"
+                    description = "Access denied"
             )
     })
     @Parameters({
             @Parameter(
                     name = "id",
-                    description = "Identificador unico de  la epica que se busca eliminar",
+                    description = "Unique epic identifier to complete",
                     required = true,
                     example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
             )
@@ -212,11 +214,11 @@ public class EpicController {
     }
 
     @GetMapping("/")
-    @Operation(summary = "Obtener todas las epicas")
+    @Operation(summary = "Get all epics")
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Lista de todas las epicas",
+                    description = "List of all epics",
                     content = @Content(
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = EpicDTO.class))
@@ -224,15 +226,15 @@ public class EpicController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Petición inválida"
+                    description = "Invalid request"
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado"
+                    description = "Unauthorized"
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado"
+                    description = "Access denied"
             )
     })
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -244,13 +246,13 @@ public class EpicController {
 
     @GetMapping
     @Operation(
-            summary = "Buscar epicas por título",
-            description = "Devuelve una lista de epicas que coinciden parcial o totalmente con el valor del título proporcionado."
+            summary = "Search epics by title",
+            description = "Returns a list of epics that partially or fully match the provided title value."
     )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Lista de epicas encontrada",
+                    description = "List of epics found",
                     content = @Content(
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = EpicDTO.class))
@@ -258,21 +260,21 @@ public class EpicController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Petición inválida"
+                    description = "Invalid request"
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado"
+                    description = "Unauthorized"
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado"
+                    description = "Access denied"
             )
     })
     @Parameters({
             @Parameter(
                     name = "title",
-                    description = "Texto parcial o completo del título de la epica a buscar",
+                    description = "Partial or complete text of the epic title to search",
                     required = true,
                     example = "bug"
             )
@@ -285,12 +287,12 @@ public class EpicController {
     }
 
     @DeleteMapping("/{id}/user/{requester}")
-    @Operation(summary = "Eliminar una epica")
+    @Operation(summary = "Delete an epic")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Parameters({
             @Parameter(
                     name = "id",
-                    description = "Identificador unico de  la epica que se busca eliminar",
+                    description = "Unique epic identifier to delete",
                     required = true,
                     example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
             )
@@ -298,17 +300,17 @@ public class EpicController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Epica eliminada correctamente",
+                    description = "Epic successfully deleted",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseMessage.class),
                             examples = {
                                     @ExampleObject(
-                                            name = "EpicaEliminada",
-                                            summary = "Ejemplo de respuesta exitosa",
+                                            name = "EpicDeleted",
+                                            summary = "Example of successful response",
                                             value = """
                             {
-                                "message": "Epica eliminada correctamente"
+                                "message": "Epic successfully deleted"
                             }
                             """
                                     )
@@ -317,35 +319,35 @@ public class EpicController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Petición inválida"
+                    description = "Invalid request"
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado"
+                    description = "Unauthorized"
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado"
+                    description = "Access denied"
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "La epica no fue encontrada"
+                    description = "Epic not found"
             )
     })
     public ResponseEntity<ResponseMessage> delete(@PathVariable UUID id, @PathVariable UUID requester) {
         service.deleteById(id, requester);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ResponseMessage("Epica eliminada correctamente"));
+                .body(new ResponseMessage("Epic successfully deleted"));
     }
 
     @PatchMapping("/{id}")
-    @Operation(summary = "Actualizar una epica")
+    @Operation(summary = "Update an epic")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Epica actualizada",
+                    description = "Epic updated",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = EpicDTO.class)
@@ -353,15 +355,15 @@ public class EpicController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Petición inválida"
+                    description = "Invalid request"
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado"
+                    description = "Unauthorized"
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado",
+                    description = "Access denied",
                     content = @Content(
 
                     )

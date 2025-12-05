@@ -15,10 +15,17 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.springframework.test.context.TestPropertySource;
+
 @SpringBootTest
 @Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
+@TestPropertySource(properties = {
+    "spring.config.import=",
+    "spring.datasource.url=jdbc:h2:mem:testdb",
+    "spring.datasource.driver-class-name=org.h2.Driver"
+})
 @DisplayName("RoleRepository - Integration Tests")
 class RoleRepositoryTest {
 

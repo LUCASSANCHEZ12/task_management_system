@@ -33,7 +33,16 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+@TestPropertySource(properties = {
+    "spring.config.import=",
+    "spring.datasource.url=jdbc:h2:mem:testdb",
+    "spring.datasource.driver-class-name=org.h2.Driver"
+})
 @Import({GlobalExceptionHandler.class})
 @DisplayName("EpicController - Integration Tests")
 public class EpicControllerTest {
@@ -372,6 +381,6 @@ public class EpicControllerTest {
 
         mockMvc.perform(delete("/api/epic/{id}/user/{requester}", epicId, requester).with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Epica eliminada correctamente"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Epic successfully deleted"));
     }
 }

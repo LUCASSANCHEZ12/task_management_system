@@ -48,6 +48,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Profile profile;
+
     public static Builder builder() {
         return new Builder();
     }
@@ -61,6 +64,7 @@ public class User {
         private Date createdAt;
         private Date updatedAt;
         private List<Task> tasks = new ArrayList<>();
+        private Profile profile;
 
         public Builder id(UUID id) { this.id = id; return this; }
         public Builder name(String name) { this.name = name; return this; }
@@ -70,6 +74,7 @@ public class User {
         public Builder createdAt(Date createdAt) { this.createdAt = createdAt; return this; }
         public Builder updatedAt(Date updatedAt) { this.updatedAt = updatedAt; return this; }
         public Builder tasks(List<Task> tasks) { this.tasks = tasks; return this; }
+        public Builder profile(Profile profile) { this.profile = profile; return this; }
 
         public User build() {
             User user = new User();
@@ -81,6 +86,7 @@ public class User {
             user.createdAt = this.createdAt;
             user.updatedAt = this.updatedAt;
             user.tasks = this.tasks;
+            user.profile = this.profile;
             return user;
         }
     }

@@ -29,7 +29,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/project")
-@Tag(name = "Proyectos", description = "Endpoints para gestión de proyectos")
+@Tag(name = "Projects", description = "Project management endpoints")
 @SecurityRequirement(name = "Authorization")
 public class ProjectController {
 
@@ -40,12 +40,12 @@ public class ProjectController {
     }
 
     @PostMapping("/create")
-    @Operation(summary = "Crear un nuevo proyecto")
+    @Operation(summary = "Create a new project")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "201",
-            description = "Proyecto creado",
+            description = "Project created",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = ProjectDTO.class)
@@ -53,15 +53,15 @@ public class ProjectController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Petición inválida"
+            description = "Invalid request"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "No autorizado"
+            description = "Unauthorized"
         ),
         @ApiResponse(
             responseCode = "403",
-            description = "Acceso denegado"
+            description = "Access denied"
         )
     })
     public ResponseEntity<ProjectDTO> create(
@@ -78,12 +78,12 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener un proyecto por ID")
+    @Operation(summary = "Get a project by ID")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Proyecto encontrado",
+            description = "Project found",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = ProjectDTO.class)
@@ -91,25 +91,25 @@ public class ProjectController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Petición inválida"
+            description = "Invalid request"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "No autorizado"
+            description = "Unauthorized"
         ),
         @ApiResponse(
             responseCode = "403",
-            description = "Acceso denegado"
+            description = "Access denied"
         ),
         @ApiResponse(
             responseCode = "404",
-            description = "Proyecto no encontrado"
+            description = "Project not found"
         )
     })
     @Parameters({
         @Parameter(
             name = "id",
-            description = "Identificador único del proyecto",
+            description = "Unique project identifier",
             required = true,
             example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         )
@@ -121,12 +121,12 @@ public class ProjectController {
     }
 
     @GetMapping("/")
-    @Operation(summary = "Obtener todos los proyectos")
+    @Operation(summary = "Get all projects")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Lista de proyectos",
+            description = "List of projects",
             content = @Content(
                 mediaType = "application/json",
                 array = @ArraySchema(schema = @Schema(implementation = ProjectDTO.class))
@@ -153,14 +153,14 @@ public class ProjectController {
 
     @GetMapping
     @Operation(
-        summary = "Buscar proyectos por título",
-        description = "Devuelve una lista de proyectos que coinciden parcial o totalmente con el valor del título proporcionado."
+        summary = "Search projects by title",
+        description = "Returns a list of projects that partially or fully match the provided title value."
     )
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Lista de proyectos encontrados",
+            description = "List of projects found",
             content = @Content(
                 mediaType = "application/json",
                 array = @ArraySchema(schema = @Schema(implementation = ProjectDTO.class))
@@ -182,7 +182,7 @@ public class ProjectController {
     @Parameters({
         @Parameter(
             name = "title",
-            description = "Texto parcial o completo del título del proyecto a buscar",
+            description = "Partial or complete text of the project title to search",
             required = true,
             example = "Backend"
         )
@@ -194,12 +194,12 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}/tasks")
-    @Operation(summary = "Obtener todas las tareas de un proyecto")
+    @Operation(summary = "Get all tasks in a project")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Lista de tareas del proyecto",
+            description = "List of project tasks",
             content = @Content(
                 mediaType = "application/json",
                 array = @ArraySchema(schema = @Schema(implementation = TaskDTO.class))
@@ -225,7 +225,7 @@ public class ProjectController {
     @Parameters({
         @Parameter(
             name = "id",
-            description = "Identificador único del proyecto",
+            description = "Unique project identifier",
             required = true,
             example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         )
@@ -237,12 +237,12 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}/epics")
-    @Operation(summary = "Obtener todos los épicos de un proyecto")
+    @Operation(summary = "Get all epics in a project")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Lista de épicos del proyecto",
+            description = "List of project epics",
             content = @Content(
                 mediaType = "application/json",
                 array = @ArraySchema(schema = @Schema(implementation = EpicDTO.class))
@@ -280,12 +280,12 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
-    @Operation(summary = "Actualizar un proyecto")
+    @Operation(summary = "Update a project")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Proyecto actualizado",
+            description = "Project updated",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = ProjectDTO.class)
@@ -331,12 +331,12 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar un proyecto")
+    @Operation(summary = "Delete a project")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Parameters({
         @Parameter(
             name = "id",
-            description = "Identificador único del proyecto",
+            description = "Unique project identifier",
             required = true,
             example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         )
@@ -344,7 +344,7 @@ public class ProjectController {
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Proyecto eliminado correctamente",
+            description = "Project successfully deleted",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = ResponseMessage.class)
@@ -352,19 +352,19 @@ public class ProjectController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Petición inválida"
+            description = "Invalid request"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "No autorizado"
+            description = "Unauthorized"
         ),
         @ApiResponse(
             responseCode = "403",
-            description = "Acceso denegado"
+            description = "Access denied"
         ),
         @ApiResponse(
             responseCode = "404",
-            description = "Proyecto no encontrado"
+            description = "Project not found"
         )
     })
     public ResponseEntity<ResponseMessage> delete(@PathVariable UUID id, Authentication auth) {
