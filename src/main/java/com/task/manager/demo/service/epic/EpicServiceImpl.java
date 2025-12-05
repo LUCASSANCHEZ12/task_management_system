@@ -24,8 +24,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.postgresql.shaded.com.ongres.scram.common.util.Preconditions.checkArgument;
-
+/**
+ * Implementation of the {@link EpicService} interface that manages CRUD and
+ * business operations related to Epics within a project management system.
+ * <p>
+ * This service handles creation, retrieval, updating, deletion, task listing,
+ * and search functionalities associated with epics. It uses mappers and
+ * repositories to interact with the persistence layer and convert entities
+ * to DTO representations.
+ * </p>
+ */
 @Service
 public class EpicServiceImpl implements EpicService{
 
@@ -37,6 +45,17 @@ public class EpicServiceImpl implements EpicService{
     private final EpicMapper mapper;
     private final UserRepository userRepository;
 
+    /**
+     * Constructs a new {@code EpicServiceImpl} with all required dependencies.
+     *
+     * @param taskRepository    repository for task persistence
+     * @param taskMapper        mapper for converting Task entities to DTOs
+     * @param projectRepository repository for project persistence
+     * @param projectMapper     mapper for converting Project entities to DTOs
+     * @param repository        repository for epic persistence
+     * @param mapper            mapper for converting Epic entities and DTOs
+     * @param userRepository    repository for user persistence
+     */
     public EpicServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper, ProjectRepository projectRepository, ProjectMapper projectMapper, EpicRepository repository, EpicMapper mapper, UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
@@ -47,7 +66,21 @@ public class EpicServiceImpl implements EpicService{
         this.userRepository = userRepository;
     }
 
-
+    /**
+     * Creates a new epic based on the provided {@link EpicRequest}.
+     * <p>
+     * Validates title and description, checks for project existence,
+     * ensures uniqueness of the epic title within the project, and
+     * persists the new epic.
+     * </p>
+     *
+     * @param request the epic creation request containing details such as title,
+     *                description, and story points
+     * @return an {@link EpicDTO} representing the created epic
+     * @throws ResourceNotFoundException if the referenced project does not exist
+     * @throws IllegalArgumentException  if required fields are blank
+     * @throws BadRequestException       if the epic title already exists in the project
+     */
     @Override
     public EpicDTO create(EpicRequest request) {
         Project project = projectRepository.findById(request.project_id())
@@ -77,6 +110,13 @@ public class EpicServiceImpl implements EpicService{
         return mapper.toDto(repository.save(epic));
     }
 
+    /**
+     * Retrieves an epic by its unique identifier.
+     *
+     * @param epic_Id the UUID of the epic to retrieve
+     * @return an {@link EpicDTO} containing epic data
+     * @throws ResourceNotFoundException if the epic does not exist
+     */
     @Override
     public EpicDTO findById(UUID epic_Id) {
         Epic epic = repository.findById(epic_Id)
@@ -84,6 +124,13 @@ public class EpicServiceImpl implements EpicService{
         return mapper.toDto(epic);
     }
 
+    /**
+     * Marks the specified epic as completed and sets the finish timestamp.
+     *
+     * @param epic_Id the UUID of the epic to complete
+     * @return an updated {@link EpicDTO} representing the completed epic
+     * @throws ResourceNotFoundException if the epic does not exist
+     */
     @Override
     public EpicDTO complete(UUID epic_Id) {
         Epic epic = repository.findById(epic_Id)
@@ -93,6 +140,11 @@ public class EpicServiceImpl implements EpicService{
         return mapper.toDto(repository.save(epic));
     }
 
+    /**
+     * Retrieves all epics stored in the system.
+     *
+     * @return a list of {@link EpicDTO} objects representing all epics
+     */
     @Override
     public List<EpicDTO> getAll() {
         return repository.findAll().stream()
@@ -100,6 +152,13 @@ public class EpicServiceImpl implements EpicService{
                 .toList();
     }
 
+    /**
+     * Retrieves all tasks associated with a specific epic.
+     *
+     * @param epic_Id the UUID of the epic whose tasks are requested
+     * @return a list of {@link TaskDTO} representing tasks within the epic
+     * @throws ResourceNotFoundException if the epic does not exist
+     */
     @Override
     public List<TaskDTO> getAllTasksInEpic(UUID epic_Id) {
         if (repository.findById(epic_Id).isEmpty()) {
@@ -109,6 +168,13 @@ public class EpicServiceImpl implements EpicService{
         return tasks.stream().map(taskMapper::toDto).toList();
     }
 
+    /**
+     * Deletes an epic by its ID and registers which user performed the deletion.
+     *
+     * @param epic_id   the UUID of the epic to delete
+     * @param requester the UUID of the user performing the deletion
+     * @throws ResourceNotFoundException if the epic or user does not exist
+     */
     @Override
     public void deleteById(UUID epic_id, UUID requester) {
         Optional<Epic> epic = repository.findById(epic_id);
@@ -124,6 +190,14 @@ public class EpicServiceImpl implements EpicService{
         repository.deleteById(epic_id);
     }
 
+    /**
+     * Updates the specified epic using the provided update data.
+     *
+     * @param epic_id the UUID of the epic to update
+     * @param request the update details encapsulated in {@link EpicUpdateDTO}
+     * @return an updated {@link EpicDTO} after applying changes
+     * @throws ResourceNotFoundException if the epic does not exist
+     */
     @Override
     public EpicDTO update(UUID epic_id, EpicUpdateDTO request) {
         Epic epic = repository.findById(epic_id)
@@ -133,6 +207,12 @@ public class EpicServiceImpl implements EpicService{
         return mapper.toDto(repository.save(epic));
     }
 
+    /**
+     * Searches for epics whose title matches the given text.
+     *
+     * @param title the title or partial title to search for
+     * @return a list of {@link EpicDTO} matching the search criteria
+     */
     @Override
     public List<EpicDTO> searchEpicByTitle(String title) {
         List<Epic> epics = repository.searchByTitle(title);
