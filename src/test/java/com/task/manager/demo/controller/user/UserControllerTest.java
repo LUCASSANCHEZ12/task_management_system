@@ -1,10 +1,13 @@
 package com.task.manager.demo.controller.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.task.manager.demo.dto.profile.ProfileDto;
+import com.task.manager.demo.dto.profile.ProfileUpdateDTO;
 import com.task.manager.demo.dto.user.UserDto;
 import com.task.manager.demo.dto.user.UserUpdateDTO;
 import com.task.manager.demo.exception.GlobalExceptionHandler;
 import com.task.manager.demo.exception.ResourceNotFoundException;
+import com.task.manager.demo.service.profile.ProfileService;
 import com.task.manager.demo.service.user.UserService;
 import com.task.manager.demo.service.user.UserServiceImpl;
 import com.task.manager.demo.service.user.UserServiceImpl;
@@ -21,6 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,13 +36,25 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+@TestPropertySource(properties = {
+    "spring.config.import=",
+    "spring.datasource.url=jdbc:h2:mem:testdb",
+    "spring.datasource.driver-class-name=org.h2.Driver"
+})
 @Import({UserServiceImpl.class, GlobalExceptionHandler.class})
 @DisplayName("UserController - Integration Tests")
 public class UserControllerTest {
 
     @MockitoBean
     private UserService service;
+
+    @MockitoBean
+    private ProfileService profileService;
 
     private ObjectMapper objectMapper;
 
@@ -166,6 +182,112 @@ public class UserControllerTest {
         mockMvc.perform(patch("/api/user/{id}", id)
                         .contentType("application/json")
                         .content("{\"name\": \"John Doe\", \"email\": \"john@example.com\", \"password\": \"password123\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should create profile for user when profile does not exist")
+    @WithMockUser(roles = "ADMIN")
+    void shouldCreateProfileForUserWhenProfileDoesNotExist() throws Exception {
+        UUID userId = UUID.randomUUID();
+        ProfileUpdateDTO request = new ProfileUpdateDTO("USA", "123 Main St", "555-1234");
+        LocalDateTime now = LocalDateTime.now();
+        ProfileDto expectedProfile = new ProfileDto(UUID.randomUUID(), "USA", "123 Main St", "555-1234", now, now);
+
+        when(profileService.existsByUserId(userId)).thenReturn(false);
+        when(profileService.createOrUpdateProfile(eq(userId), any(ProfileUpdateDTO.class))).thenReturn(expectedProfile);
+
+        mockMvc.perform(put("/api/user/{userId}/profile", userId)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.country").value("USA"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address").value("123 Main St"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").value("555-1234"));
+    }
+
+    @Test
+    @DisplayName("Should update existing profile for user")
+    @WithMockUser(roles = "ADMIN")
+    void shouldUpdateExistingProfileForUser() throws Exception {
+        UUID userId = UUID.randomUUID();
+        ProfileUpdateDTO request = new ProfileUpdateDTO("Canada", "456 Oak Ave", "555-5678");
+        LocalDateTime now = LocalDateTime.now();
+        ProfileDto expectedProfile = new ProfileDto(UUID.randomUUID(), "Canada", "456 Oak Ave", "555-5678", now, now);
+
+        when(profileService.existsByUserId(userId)).thenReturn(true);
+        when(profileService.createOrUpdateProfile(eq(userId), any(ProfileUpdateDTO.class))).thenReturn(expectedProfile);
+
+        mockMvc.perform(put("/api/user/{userId}/profile", userId)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.country").value("Canada"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address").value("456 Oak Ave"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").value("555-5678"));
+    }
+
+    @Test
+    @DisplayName("Should return not found when user does not exist")
+    @WithMockUser(roles = "ADMIN")
+    void shouldReturnNotFoundWhenUserDoesNotExist() throws Exception {
+        UUID userId = UUID.randomUUID();
+        ProfileUpdateDTO request = new ProfileUpdateDTO("USA", "123 Main St", "555-1234");
+
+        when(profileService.existsByUserId(userId)).thenReturn(false);
+        when(profileService.createOrUpdateProfile(eq(userId), any(ProfileUpdateDTO.class)))
+                .thenThrow(new ResourceNotFoundException("User not found"));
+
+        mockMvc.perform(put("/api/user/{userId}/profile", userId)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should successfully access profile endpoint with ADMIN role")
+    @WithMockUser(roles = "ADMIN")
+    void shouldSuccessfullyAccessProfileEndpointWithUserRole() throws Exception {
+        UUID userId = UUID.randomUUID();
+        ProfileUpdateDTO request = new ProfileUpdateDTO("USA", "123 Main St", "555-1234");
+        LocalDateTime now = LocalDateTime.now();
+        ProfileDto expectedProfile = new ProfileDto(UUID.randomUUID(), "USA", "123 Main St", "555-1234", now, now);
+
+        when(profileService.existsByUserId(userId)).thenReturn(false);
+        when(profileService.createOrUpdateProfile(eq(userId), any(ProfileUpdateDTO.class))).thenReturn(expectedProfile);
+
+        mockMvc.perform(put("/api/user/{userId}/profile", userId)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("Should successfully get user profile")
+    @WithMockUser(roles = "ADMIN")
+    void shouldSuccessfullyGetUserProfile() throws Exception {
+        UUID userId = UUID.randomUUID();
+        LocalDateTime now = LocalDateTime.now();
+        ProfileDto expectedProfile = new ProfileDto(UUID.randomUUID(), "USA", "123 Main St", "555-1234", now, now);
+
+        when(profileService.findByUserId(userId)).thenReturn(expectedProfile);
+
+        mockMvc.perform(get("/api/user/{userId}/profile", userId))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.country").value("USA"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address").value("123 Main St"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").value("555-1234"));
+    }
+
+    @Test
+    @DisplayName("Should return not found when profile does not exist")
+    @WithMockUser(roles = "ADMIN")
+    void shouldReturnNotFoundWhenProfileDoesNotExist() throws Exception {
+        UUID userId = UUID.randomUUID();
+
+        when(profileService.findByUserId(userId)).thenThrow(new ResourceNotFoundException("Profile not found for user"));
+
+        mockMvc.perform(get("/api/user/{userId}/profile", userId))
                 .andExpect(status().isNotFound());
     }
 }

@@ -18,9 +18,16 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.springframework.test.context.TestPropertySource;
+
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
+@TestPropertySource(properties = {
+    "spring.config.import=",
+    "spring.datasource.url=jdbc:h2:mem:testdb",
+    "spring.datasource.driver-class-name=org.h2.Driver"
+})
 @DisplayName("EpicRepository - Integration Tests")
 class EpicRepositoryTest {
 
