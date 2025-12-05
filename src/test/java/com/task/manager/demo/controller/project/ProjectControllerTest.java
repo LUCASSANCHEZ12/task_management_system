@@ -10,12 +10,9 @@ import com.task.manager.demo.entity.Type_Enum;
 import com.task.manager.demo.exception.GlobalExceptionHandler;
 import com.task.manager.demo.exception.ResourceNotFoundException;
 import com.task.manager.demo.service.project.ProjectService;
-import com.task.manager.demo.service.project.ProjectServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MediaType;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -36,24 +33,13 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@ActiveProfiles("test")
-//@TestPropertySource(properties = {
-//        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
-//        "spring.datasource.driver-class-name=org.h2.Driver",
-//        "spring.datasource.username=sa",
-//        "spring.datasource.password=",
-//        "spring.jpa.hibernate.ddl-auto=create-drop",
-//        "spring.flyway.enabled=false"
-//})
-@Import({ProjectServiceImpl.class, GlobalExceptionHandler.class})
+@Import({GlobalExceptionHandler.class})
 @DisplayName("ProjectController - Integration Tests")
 public class ProjectControllerTest {
 
