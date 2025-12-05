@@ -44,18 +44,18 @@ jobs:
     - name: Grant execute permission for mvnw
       run: chmod +x mvnw
 
+    - name: Run tests and verify coverage (50%)
+      run: ./mvnw clean verify
+
     - name: Generate test coverage report
       run: ./mvnw jacoco:report
 
     - name: Upload JaCoCo Report
       uses: actions/upload-artifact@v4
       with:
-          name: jacoco-report
-          path: target/site/jacoco/
-          retention-days: 7
-
-    - name: Run tests and verify coverage (50%)
-      run: ./mvnw clean verify
+        name: jacoco-report
+        path: target/site/jacoco/
+        retention-days: 7
 
   build:
     needs: test

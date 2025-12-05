@@ -330,7 +330,7 @@ public class ProjectController {
                 .body(service.update(id, request));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/user/{userId}")
     @Operation(summary = "Delete a project")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Parameters({
@@ -367,8 +367,8 @@ public class ProjectController {
             description = "Project not found"
         )
     })
-    public ResponseEntity<ResponseMessage> delete(@PathVariable UUID id, Authentication auth) {
-        service.deleteById(id, UUID.fromString(auth.getName()));
+    public ResponseEntity<ResponseMessage> delete(@PathVariable UUID id, @PathVariable UUID userId) {
+        service.deleteById(id, userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("Project successfully deleted"));

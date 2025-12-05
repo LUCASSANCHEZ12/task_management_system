@@ -13,7 +13,7 @@ public interface TaskService {
     TaskDTO complete(UUID id);
     List<TaskDTO> getAll();
     List<TaskDTO> getAllUserTasks(UUID user_id);
-    void deleteById(UUID id);
+    void deleteById(UUID id, UUID user_id);
     TaskDTO update(UUID task_id, TaskUpdateDTO request);
     List<TaskDTO> searchByTaskByTitle(String title);
     TaskDTO assignToEpic(UUID task_id, UUID epic_id);

@@ -51,6 +51,17 @@ public class Profile {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
     public static Builder builder() {
         return new Builder();
     }

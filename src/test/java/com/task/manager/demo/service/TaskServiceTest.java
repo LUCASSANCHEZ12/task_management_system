@@ -66,7 +66,7 @@ public class TaskServiceTest {
         oldTask.setProject(new Project());
         oldProject = new Project();
         oldProject.setId(UUID.randomUUID());
-        oldTaskRequest = new TaskRequest( "Old Task",  "Old Task for testing", 0, "TASK",  oldProject.getId() );
+        oldTaskRequest = new TaskRequest( "Old Task",  "Old Task for testing", 0, "TASK", null,  oldProject.getId() );
     }
 
     @AfterEach
@@ -97,7 +97,7 @@ public class TaskServiceTest {
     @Test
     @DisplayName("Fail to create task with empty title")
     void shouldNotCreateTaskTestWithEmptyTitle() {
-        TaskRequest request = new TaskRequest( "",  "Old Task for testing", 0, "TASK",  oldProject.getId() );
+        TaskRequest request = new TaskRequest( "",  "Old Task for testing", 0, "TASK", null, oldProject.getId() );
 
         when(projectRepository.findById(oldProject.getId())).thenReturn(Optional.of(oldProject));
 
@@ -110,8 +110,8 @@ public class TaskServiceTest {
     @Test
     @DisplayName("Fail to create two task with same title")
     void shouldNotCreateTwoTaskWithSameTitle() {
-        TaskRequest req1 = new TaskRequest("Old task", "Old Task for testing", 0, "TASK", oldProject.getId());
-        TaskRequest req2 = new TaskRequest("Old task", "Old Task for testing", 0, "TASK", oldProject.getId());
+        TaskRequest req1 = new TaskRequest("Old task", "Old Task for testing", 0, "TASK",null, oldProject.getId());
+        TaskRequest req2 = new TaskRequest("Old task", "Old Task for testing", 0, "TASK", null,oldProject.getId());
         TaskDTO expectedDto = new TaskDTO(id, "Old Task", "Old Task for testing", false, null,null,null,0, Type_Enum.TASK, null,null,null,null);
 
         when(projectRepository.findById(oldProject.getId())).thenReturn(Optional.of(oldProject));
@@ -130,7 +130,7 @@ public class TaskServiceTest {
     @Test
     @DisplayName("Fail to create task with empty description")
     void shouldNotCreateTaskTestWithEmptyDescription() {
-        TaskRequest request = new TaskRequest( "Old Task",  "", 0, "TASK", oldProject.getId() );
+        TaskRequest request = new TaskRequest( "Old Task",  "", 0, "TASK", null,oldProject.getId() );
 
         when(projectRepository.findById(oldProject.getId())).thenReturn(Optional.of(oldProject));
 
@@ -146,7 +146,7 @@ public class TaskServiceTest {
         UUID projectId = UUID.randomUUID();
         Project project = new Project();
         project.setId(projectId);
-        TaskRequest request = new TaskRequest( "Old Task",  "Old task test", -10, "TASK",  projectId );
+        TaskRequest request = new TaskRequest( "Old Task",  "Old task test", -10, "TASK",null, projectId );
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
 
@@ -161,7 +161,7 @@ public class TaskServiceTest {
         UUID projectId = UUID.randomUUID();
         Project project = new Project();
         project.setId(projectId);
-        TaskRequest request = new TaskRequest( "",  "Old Task for testing", 0, "TASK",  projectId );
+        TaskRequest request = new TaskRequest( "",  "Old Task for testing", 0, "TASK", null, projectId );
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> taskService.create(request));
@@ -172,7 +172,7 @@ public class TaskServiceTest {
     @Test
     @DisplayName("Fail to create task with empty type")
     void shouldNotCreateTaskTestWithEmptyType() {
-        TaskRequest request = new TaskRequest( "Old task",  "Old Task for testing", 0, "",  oldProject.getId() );
+        TaskRequest request = new TaskRequest( "Old task",  "Old Task for testing", 0, "", null, oldProject.getId() );
         when(projectRepository.findById(oldProject.getId())).thenReturn(Optional.of(oldProject));
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> taskService.create(request));
@@ -182,7 +182,7 @@ public class TaskServiceTest {
     @Test
     @DisplayName("Fail to create task with false type")
     void shouldNotCreateTaskTestWithFalseType() {
-        TaskRequest request = new TaskRequest( "Old task",  "Old Task for testing", 0, "FALSE TASK",  oldProject.getId() );
+        TaskRequest request = new TaskRequest( "Old task",  "Old Task for testing", 0, "FALSE TASK", null, oldProject.getId() );
         when(projectRepository.findById(oldProject.getId())).thenReturn(Optional.of(oldProject));
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> taskService.create(request));
@@ -282,10 +282,11 @@ public class TaskServiceTest {
     @DisplayName("Successfully delete a task")
     void shouldDeleteTask() {
         UUID id = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
         Task task = new Task();
         task.setId(id);
         when(repository.findById(id)).thenReturn(Optional.of(task));
-        assertDoesNotThrow(() -> taskService.deleteById(id));
+        assertDoesNotThrow(() -> taskService.deleteById(id, userId));
         verify(repository).findById(id);
         verify(repository).deleteById(id);
     }
@@ -293,8 +294,9 @@ public class TaskServiceTest {
     @DisplayName("Fail to delete a task")
     void shouldNotDeleteTask() {
         UUID random = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
         ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
-                () -> taskService.deleteById(random));
+                () -> taskService.deleteById(random, userId));
         assertEquals("Task not found", ex.getMessage());
     }
 
@@ -413,11 +415,17 @@ public class TaskServiceTest {
     void shouldAssignTaskToEpic() {
         UUID taskId = UUID.randomUUID();
         UUID epicId = UUID.randomUUID();
+        UUID projectId = UUID.randomUUID();
+
+        Project epicProject = new Project();
+        epicProject.setId(projectId);
 
         Task task = new Task();
         task.setId(taskId);
+        task.setProject(epicProject);
         Epic epic = new Epic();
         epic.setId(epicId);
+        epic.setProject(epicProject);
 
         TaskDTO expectedDto = new TaskDTO(
                 taskId,

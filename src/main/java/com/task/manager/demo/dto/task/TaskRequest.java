@@ -2,6 +2,7 @@ package com.task.manager.demo.dto.task;
 
 import com.task.manager.demo.entity.Type_Enum;
 import com.task.manager.demo.validation.annotation.ValidTaskType;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,6 +22,8 @@ public record TaskRequest(
         int story_points,
         @ValidTaskType
         String type,
+        @Nullable
+        UUID parent_id,
         @NotNull(message = "Project ID is required")
         UUID project_id
 ) {

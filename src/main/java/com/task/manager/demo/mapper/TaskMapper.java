@@ -10,6 +10,7 @@ public interface TaskMapper {
     @Mapping(source = "user.id", target = "user_id")
     @Mapping(source = "epic.id", target = "epic_id")
     @Mapping(source = "project.id", target = "project_id")
+    @Mapping(source = "task_parent.id", target = "parent_id")
     TaskDTO toDto(Task entity);
 
     void toEntity(TaskUpdateDTO dto, @MappingTarget Task entity);
