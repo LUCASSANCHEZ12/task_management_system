@@ -371,6 +371,6 @@ public class ProjectController {
         service.deleteById(id, UUID.fromString(auth.getName()));
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ResponseMessage("Proyecto eliminado correctamente"));
+                .body(new ResponseMessage("Project successfully deleted"));
     }
 }

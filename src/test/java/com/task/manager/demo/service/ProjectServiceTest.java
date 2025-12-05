@@ -101,7 +101,7 @@ public class ProjectServiceTest {
         ProjectRequest request = new ProjectRequest( "",  "Old Project for testing" );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> service.create(request));
-        assertEquals("Argument 'Title must not be blank' is not valid", exception.getMessage());
+        assertEquals("Title must not be blank", exception.getMessage());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class ProjectServiceTest {
         ProjectRequest request = new ProjectRequest( "Old Project",  "" );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> service.create(request));
-        assertEquals("Argument 'Description must not be blank' is not valid", exception.getMessage());
+        assertEquals("Description must not be blank", exception.getMessage());
 
     }
 

@@ -49,8 +49,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDTO create(ProjectRequest request) {
-        checkArgument(!request.title().isBlank(), "Title must not be blank");
-        checkArgument(!request.description().isBlank(), "Description must not be blank");
+        if (request.title().isBlank()) {
+            throw new IllegalArgumentException("Title must not be blank");
+        }
+        if (request.description().isBlank()) {
+            throw new IllegalArgumentException("Description must not be blank");
+        }
 
         if (projectRepository.existsByProjectTitle(request.title())) {
             throw new BadRequestException("Title already exists");
