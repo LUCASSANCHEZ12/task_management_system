@@ -7,16 +7,16 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record RegisterRequest(
-        @NotBlank(message = "El nombre es requerido")
-        @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
+        @NotBlank(message = "Name is required")
+        @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
         String name,
 
-        @Email(message = "El email debe ser válido")
-        @NotBlank(message = "El email es requerido")
+        @Email(message = "Email must be valid")
+        @NotBlank(message = "Email is required")
         String email,
 
-        @NotBlank(message = "La contraseña es requerida")
-        @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
+        @NotBlank(message = "Password is required")
+        @Size(min = 6, message = "Password must be at least 6 characters")
         String password,
 
         List<String> roleNames

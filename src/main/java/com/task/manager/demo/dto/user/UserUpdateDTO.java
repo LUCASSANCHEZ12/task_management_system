@@ -6,19 +6,19 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record UserUpdateDTO(
-        @NotBlank(message = "El nombre no puede estar vacío")
-        @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
+        @NotBlank(message = "Name cannot be empty")
+        @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
         String name,
 
-        @Email(message = "El correo electrónico debe ser válido")
-        @NotBlank(message = "El correo electrónico no puede estar vacío")
+        @Email(message = "Email must be valid")
+        @NotBlank(message = "Email cannot be empty")
         String email,
 
-        @NotBlank(message = "La contraseña no puede estar vacía")
-        @Size(min = 8, max = 128, message = "La contraseña debe tener entre 8 y 128 caracteres")
+        @NotBlank(message = "Password cannot be empty")
+        @Size(min = 8, max = 128, message = "Password must be between 8 and 128 characters")
         String password,
 
-        @NotBlank(message = "El rol no puede estar vacío")
+        @NotBlank(message = "Role cannot be empty")
         Role role
 ) {
 }

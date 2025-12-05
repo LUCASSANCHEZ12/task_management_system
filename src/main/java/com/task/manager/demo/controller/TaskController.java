@@ -27,7 +27,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/task")
-@Tag(name = "Tareas", description = "Endpoints para gestión de tareas")
+@Tag(name = "Tasks", description = "Task management endpoints")
 @SecurityRequirement(name = "Authorization")
 public class TaskController {
 
@@ -38,12 +38,12 @@ public class TaskController {
     }
 
     @PostMapping("/create")
-    @Operation(summary = "Crear una nueva tarea")
+    @Operation(summary = "Create new task")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "201",
-            description = "Tarea creada",
+            description = "Task created",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = TaskDTO.class)
@@ -51,15 +51,15 @@ public class TaskController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Petición inválida"
+            description = "Invalid request"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "No autorizado"
+            description = "Unauthorized"
         ),
         @ApiResponse(
             responseCode = "403",
-            description = "Acceso denegado"
+            description = "Forbidden"
         )
     })
     public ResponseEntity<TaskDTO> create(
@@ -75,13 +75,13 @@ public class TaskController {
                 .body(service.create(request));
     }
 
-    @Operation(summary = "Obtener una tarea por ID")
+    @Operation(summary = "Get task by ID")
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Tarea con identificador 3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            description = "Task with identifier 3fa85f64-5717-4562-b3fc-2c963f66afa6",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = TaskDTO.class)
@@ -89,21 +89,21 @@ public class TaskController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Petición inválida"
+            description = "Invalid request"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "No autorizado"
+            description = "Unauthorized"
         ),
         @ApiResponse(
             responseCode = "403",
-            description = "Acceso denegado"
+            description = "Forbidden"
         )
     })
     @Parameters({
         @Parameter(
             name = "id",
-            description = "Identificador unico de  la tarea que se busca eliminar",
+            description = "Unique identifier of the task to retrieve",
             required = true,
             example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         )
@@ -114,13 +114,13 @@ public class TaskController {
                 .body(service.findById(id));
     }
 
-    @Operation(summary = "Obtener todas las tareas de un usuario")
+    @Operation(summary = "Get all tasks for a user")
     @GetMapping("/user/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Lista de tareas asignadas al usuario",
+            description = "List of tasks assigned to the user",
             content = @Content(
                 mediaType = "application/json",
                 array = @ArraySchema(schema = @Schema(implementation = TaskDTO.class))
@@ -128,21 +128,21 @@ public class TaskController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Petición inválida"
+            description = "Invalid request"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "No autorizado"
+            description = "Unauthorized"
         ),
         @ApiResponse(
             responseCode = "403",
-            description = "Acceso denegado"
+            description = "Forbidden"
         )
     })
     @Parameters({
         @Parameter(
             name = "id",
-            description = "Identificador unico del usuario asignado a la tarea",
+            description = "Unique identifier of the user assigned to the tasks",
             required = true,
             example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         )
@@ -154,12 +154,12 @@ public class TaskController {
     }
 
     @PostMapping("/complete/{id}")
-    @Operation(summary = "Completar una tarea")
+    @Operation(summary = "Complete task")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Tarea completada",
+            description = "Task completed",
             content = @Content(
                 mediaType = "application/json",
                 examples = {
@@ -186,21 +186,21 @@ public class TaskController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Petición inválida"
+            description = "Invalid request"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "No autorizado"
+            description = "Unauthorized"
         ),
         @ApiResponse(
             responseCode = "403",
-            description = "Acceso denegado"
+            description = "Forbidden"
         )
     })
     @Parameters({
         @Parameter(
             name = "id",
-            description = "Identificador unico de  la tarea que se busca eliminar",
+            description = "Unique identifier of the task to complete",
             required = true,
             example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         )
@@ -212,11 +212,11 @@ public class TaskController {
     }
 
     @GetMapping("/")
-    @Operation(summary = "Obtener todas las tareas")
+    @Operation(summary = "Get all tasks")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Lista de todas las tareas",
+            description = "List of all tasks",
             content = @Content(
                     mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = TaskDTO.class))
@@ -224,15 +224,15 @@ public class TaskController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Petición inválida"
+            description = "Invalid request"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "No autorizado"
+            description = "Unauthorized"
         ),
         @ApiResponse(
             responseCode = "403",
-            description = "Acceso denegado"
+            description = "Forbidden"
         )
     })
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -244,13 +244,13 @@ public class TaskController {
 
     @GetMapping
     @Operation(
-        summary = "Buscar tareas por título",
-        description = "Devuelve una lista de tareas que coinciden parcial o totalmente con el valor del título proporcionado."
+        summary = "Search tasks by title",
+        description = "Returns a list of tasks that match partially or fully with the provided title value"
     )
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Lista de tareas encontrada",
+            description = "Task list found",
             content = @Content(
                     mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = TaskDTO.class))
@@ -258,21 +258,21 @@ public class TaskController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Petición inválida"
+            description = "Invalid request"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "No autorizado"
+            description = "Unauthorized"
         ),
         @ApiResponse(
             responseCode = "403",
-            description = "Acceso denegado"
+            description = "Forbidden"
         )
     })
     @Parameters({
         @Parameter(
             name = "title",
-            description = "Texto parcial o completo del título de la tarea a buscar",
+            description = "Partial or full text of the task title to search",
             required = true,
             example = "bug"
         )
@@ -285,12 +285,12 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar una tarea")
+    @Operation(summary = "Delete task")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Parameters({
         @Parameter(
             name = "id",
-            description = "Identificador unico de  la tarea que se busca eliminar",
+            description = "Unique identifier of the task to delete",
             required = true,
             example = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         )
@@ -298,17 +298,17 @@ public class TaskController {
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Tarea eliminada correctamente",
+            description = "Task deleted successfully",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = ResponseMessage.class),
                 examples = {
                     @ExampleObject(
-                        name = "TareaEliminada",
-                        summary = "Ejemplo de respuesta exitosa",
+                        name = "TaskDeleted",
+                        summary = "Example of successful response",
                         value = """
                             {
-                                "message": "Tarea eliminada correctamente"
+                                "message": "Task deleted successfully"
                             }
                             """
                         )
@@ -317,35 +317,35 @@ public class TaskController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Petición inválida"
+            description = "Invalid request"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "No autorizado"
+            description = "Unauthorized"
         ),
         @ApiResponse(
             responseCode = "403",
-            description = "Acceso denegado"
+            description = "Forbidden"
         ),
         @ApiResponse(
             responseCode = "404",
-            description = "La tarea no fue encontrada"
+            description = "Task not found"
         )
     })
     public ResponseEntity<ResponseMessage> delete(@PathVariable UUID id) {
         service.deleteById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ResponseMessage("Tarea eliminada correctamente"));
+                .body(new ResponseMessage("Task deleted successfully"));
     }
 
     @PatchMapping("/{id}")
-    @Operation(summary = "Actualizar una tarea")
+    @Operation(summary = "Update task")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Tarea actualizada",
+            description = "Task updated",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = TaskDTO.class)
@@ -353,15 +353,15 @@ public class TaskController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Petición inválida"
+            description = "Invalid request"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "No autorizado"
+            description = "Unauthorized"
         ),
         @ApiResponse(
             responseCode = "403",
-            description = "Acceso denegado",
+            description = "Forbidden",
             content = @Content(
 
             )
