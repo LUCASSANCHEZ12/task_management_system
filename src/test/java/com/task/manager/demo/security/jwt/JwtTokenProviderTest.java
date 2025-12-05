@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,21 +32,19 @@ class JwtTokenProviderTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @Value("${jwt.secret}")
     private String jwtSecret;
-    private long jwtExpirationInMs;
 
-    @BeforeEach
-    void setUp() {
-        jwtSecret = "mySecretKeyForJWTTokenGenerationThatShouldBeAtLeast512BitsLongForHS512AlgorithmSecurityCompliance123456";
-        jwtExpirationInMs = 86400000;
-    }
+    @Value("${jwt.expiration}")
+    private long jwtExpirationInMs;
 
     @Test
     @DisplayName("Should generate valid JWT token")
     void shouldGenerateValidJwtToken() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password", authorities);
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken("testuser", "password", authorities);
 
         String token = jwtTokenProvider.generateToken(authentication);
 
@@ -59,7 +58,8 @@ class JwtTokenProviderTest {
     void shouldExtractUsernameFromValidToken() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password", authorities);
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken("testuser", "password", authorities);
 
         String token = jwtTokenProvider.generateToken(authentication);
         String username = jwtTokenProvider.getUsernameFromToken(token);
@@ -73,7 +73,9 @@ class JwtTokenProviderTest {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password", authorities);
+
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken("testuser", "password", authorities);
 
         String token = jwtTokenProvider.generateToken(authentication);
         List<String> roles = jwtTokenProvider.getRolesFromToken(token);
@@ -89,9 +91,12 @@ class JwtTokenProviderTest {
     void shouldValidateValidToken() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password", authorities);
+
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken("testuser", "password", authorities);
 
         String token = jwtTokenProvider.generateToken(authentication);
+
         boolean isValid = jwtTokenProvider.validateToken(token);
 
         assertTrue(isValid);
@@ -100,9 +105,7 @@ class JwtTokenProviderTest {
     @Test
     @DisplayName("Should reject invalid token")
     void shouldRejectInvalidToken() {
-        String invalidToken = "invalid.token.here";
-        boolean isValid = jwtTokenProvider.validateToken(invalidToken);
-
+        boolean isValid = jwtTokenProvider.validateToken("invalid.token.here");
         assertFalse(isValid);
     }
 
@@ -110,6 +113,7 @@ class JwtTokenProviderTest {
     @DisplayName("Should reject expired token")
     void shouldRejectExpiredToken() {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() - 1000);
 
@@ -129,8 +133,11 @@ class JwtTokenProviderTest {
     @Test
     @DisplayName("Should reject token with invalid signature")
     void shouldRejectTokenWithInvalidSignature() {
-        String wrongSecret = "wrongSecretKeyThatWillNotMatchTheOriginalSecret12345678901234567890123";
+        String wrongSecret =
+                "wrongSecretKeyThatWillNotMatchTheOriginalSecret12345678901234567890123";
+
         SecretKey wrongKey = Keys.hmacShaKeyFor(wrongSecret.getBytes(StandardCharsets.UTF_8));
+
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
@@ -150,8 +157,8 @@ class JwtTokenProviderTest {
     @Test
     @DisplayName("Should handle empty authorities in token generation")
     void shouldHandleEmptyAuthoritiesInTokenGeneration() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password", authorities);
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken("testuser", "password", new ArrayList<>());
 
         String token = jwtTokenProvider.generateToken(authentication);
         List<String> roles = jwtTokenProvider.getRolesFromToken(token);
@@ -164,17 +171,13 @@ class JwtTokenProviderTest {
     @Test
     @DisplayName("Should validate empty token as invalid")
     void shouldValidateEmptyTokenAsInvalid() {
-        boolean isValid = jwtTokenProvider.validateToken("");
-
-        assertFalse(isValid);
+        assertFalse(jwtTokenProvider.validateToken(""));
     }
 
     @Test
     @DisplayName("Should validate null token as invalid")
     void shouldValidateNullTokenAsInvalid() {
-        boolean isValid = jwtTokenProvider.validateToken(null);
-
-        assertFalse(isValid);
+        assertFalse(jwtTokenProvider.validateToken(null));
     }
 
     @Test
@@ -184,7 +187,9 @@ class JwtTokenProviderTest {
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         authorities.add(new SimpleGrantedAuthority("SCOPE_read"));
         authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password", authorities);
+
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken("testuser", "password", authorities);
 
         String token = jwtTokenProvider.generateToken(authentication);
         List<String> roles = jwtTokenProvider.getRolesFromToken(token);
